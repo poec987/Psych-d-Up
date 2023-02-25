@@ -10,10 +10,12 @@ class Highscore
 	public static var weekScores:Map<String, Int> = new Map();
 	public static var songScores:Map<String, Int> = new Map();
 	public static var songRating:Map<String, Float> = new Map();
+	public static var songDeaths:Map<String, Int> = new Map();
 	#else
 	public static var weekScores:Map<String, Int> = new Map();
 	public static var songScores:Map<String, Int> = new Map<String, Int>();
 	public static var songRating:Map<String, Float> = new Map<String, Float>();
+	public static var songDeaths:Map<String, Int> = new Map<String, Int>();
 	#end
 
 
@@ -21,6 +23,7 @@ class Highscore
 	{
 		var daSong:String = formatSong(song, diff);
 		setScore(daSong, 0);
+		songDeaths.set(daSong, 0);
 		setRating(daSong, 0);
 	}
 
@@ -74,6 +77,13 @@ class Highscore
 		else
 			setWeekScore(daWeek, score);
 	}
+	
+	public static function saveDeaths(song:String, deaths:Int = 0, ?diff:Int = 0):Void
+	{
+		var daSong:String = formatSong(song, diff);
+
+		setDeaths(daSong, deaths);
+	}
 
 	/**
 	 * YOU SHOULD FORMAT SONG WITH formatSong() BEFORE TOSSING IN SONG VARIABLE
@@ -100,6 +110,17 @@ class Highscore
 		FlxG.save.data.songRating = songRating;
 		FlxG.save.flush();
 	}
+	
+	static function setDeaths(song:String, deaths:Int):Void
+	{
+		// Reminder that I don't need to format this song, it should come formatted!
+		//blah blah blah shut UP bro you're weird!
+		var deathCounter:Int = songDeaths.get(song) + deaths;
+		
+		songDeaths.set(song, deathCounter);
+		FlxG.save.data.songDeaths = songDeaths;
+		FlxG.save.flush();
+	}
 
 	public static function formatSong(song:String, diff:Int):String
 	{
@@ -122,6 +143,15 @@ class Highscore
 			setRating(daSong, 0);
 
 		return songRating.get(daSong);
+	}
+	
+	public static function getDeaths(song:String, diff:Int):Int
+	{
+		var daSong:String = formatSong(song, diff);
+		if (!songDeaths.exists(daSong))
+			setDeaths(daSong, 0);
+
+		return songDeaths.get(daSong);
 	}
 
 	public static function getWeekScore(week:String, diff:Int):Int
@@ -146,6 +176,10 @@ class Highscore
 		if (FlxG.save.data.songRating != null)
 		{
 			songRating = FlxG.save.data.songRating;
+		}
+		if (FlxG.save.data.songDeaths != null)
+		{
+			songDeaths = FlxG.save.data.songDeaths;
 		}
 	}
 }
