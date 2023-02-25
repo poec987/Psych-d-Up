@@ -40,6 +40,8 @@ typedef StyleSettings =
 	var defaultButtons:Bool;
 	var buttons:Array<String>;
 	var offset:Int;
+	var hasGradient:Bool;
+	var gradientColor:Array<String>;
 }
 
 class MainMenuState extends MusicBeatState
@@ -59,6 +61,8 @@ class MainMenuState extends MusicBeatState
 	var defaultButtons:Bool;
 	var buttons:Array<String>;
 	var offset:Int;
+	var hasGradient:Bool;
+	var gradientColor:Array<String>;
 
 	var menuItems:FlxTypedGroup<FlxSprite>;
 	private var camGame:FlxCamera;
@@ -101,6 +105,8 @@ class MainMenuState extends MusicBeatState
 		defaultButtons = ssFile.defaultButtons;
 		buttons = ssFile.buttons;
 		offset = ssFile.offset;
+		hasGradient = ssFile.hasGradient;
+		gradientColor = ssFile.gradientColor;
 
 		if (!defaultButtons) {
 			optionShit = buttons;
@@ -139,10 +145,13 @@ class MainMenuState extends MusicBeatState
 		add(camFollow);
 		add(camFollowPos);
 		
-		gradientBar = FlxGradient.createGradientFlxSprite(Math.round(FlxG.width), 512, [0x00ff0000, 0x555b7c99, 0xAA3f6e96], 1, 90, true);
-		gradientBar.y = FlxG.height - gradientBar.height;
-		add(gradientBar);
-		gradientBar.scrollFactor.set(0, 0);
+		if (hasGradient)
+		{
+			gradientBar = FlxGradient.createGradientFlxSprite(Math.round(FlxG.width), 512, [Std.parseInt(gradientColor[0]), Std.parseInt(gradientColor[1]), Std.parseInt(gradientColor[2])], 1, 90, true);
+			gradientBar.y = FlxG.height - gradientBar.height;
+			add(gradientBar);
+			gradientBar.scrollFactor.set(0, 0);
+		}
 
 		magenta = new FlxSprite(-80).loadGraphic(Paths.image('menuDesat'));
 		magenta.scrollFactor.set(0, yScroll);
