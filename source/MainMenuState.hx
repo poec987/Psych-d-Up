@@ -33,7 +33,14 @@ using StringTools;
 typedef StyleList =
 {
 	var styles:Array<String>;
-} 
+}
+
+typedef StyleSettings =
+{
+	var defaultButtons:Bool;
+	var buttons:Array<String>;
+	var offset:Int;
+}
 
 class MainMenuState extends MusicBeatState
 {
@@ -42,10 +49,16 @@ class MainMenuState extends MusicBeatState
 	
 	public static var styleList:StyleList = getStyleFile('assets/images/mainmenu/styles.json');
 
+	public static var ssFile:StyleSettings = getStyleSettings('assets/images/mainmenu/'+ClientPrefs.menuStyle+'/settings.json');
+
 	public static var psychEngineVersion:String = '0.6.3'; //This is also used for Discord RPC
 	public static var curSelected:Int = 0;
 
 	public static var menuStyles:Array<String> = ["PsychStyle"];
+
+	var defaultButtons:Bool;
+	var buttons:Array<String>;
+	var offset:Int;
 
 	var menuItems:FlxTypedGroup<FlxSprite>;
 	private var camGame:FlxCamera;
@@ -80,9 +93,18 @@ class MainMenuState extends MusicBeatState
 
 		#if MODS_ALLOWED
 		styleList = getStyleFile('mods/images/mainmenu/styles.json');
+		ssFile = getStyleSettings('mods/images/mainmenu/'+ClientPrefs.menuStyle+'/settings.json');
 		#end
 
 		menuStyles = styleList.styles;
+		
+		defaultButtons = ssFile.defaultButtons;
+		buttons = ssFile.buttons;
+		offset = ssFile.offset;
+
+		if (!defaultButtons) {
+			optionShit = buttons;
+		}
 
 		#if desktop
 		// Updating Discord Rich Presence
@@ -153,6 +175,8 @@ class MainMenuState extends MusicBeatState
 			menuItem.animation.addByPrefix('selected', optionShit[i] + " white", 24);
 			menuItem.animation.play('idle');
 			menuItem.ID = i;
+			menuItem.screenCenter(X);
+			menuItem.x = menuItem.x + offset;
 			FlxTween.tween(menuItem, {x: menuItem.width / 4 + (i * 100) - 30}, 1.3, {ease: FlxEase.expoInOut});
 			menuItems.add(menuItem);
 			var scr:Float = (optionShit.length - 4) * 0.135;
@@ -348,6 +372,24 @@ class MainMenuState extends MusicBeatState
 	}
 
 	private static function getStyleFile(path:String):StyleList {
+		var rawJson:String = null;
+		#if MODS_ALLOWED
+		if(FileSystem.exists(path)) {
+			rawJson = File.getContent(path);
+		}
+		#else
+		if(OpenFlAssets.exists(path)) {
+			rawJson = Assets.getText(path);
+		}
+		#end
+
+		if(rawJson != null && rawJson.length > 0) {
+			return cast Json.parse(rawJson);
+		}
+		return null;
+	}
+
+	private static function getStyleSettings(path:String):StyleSettings {
 		var rawJson:String = null;
 		#if MODS_ALLOWED
 		if(FileSystem.exists(path)) {

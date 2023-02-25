@@ -1,0 +1,5 @@
+{
+    "defaultButtons": false,
+    "buttons": ["story_mode", "freeplay", "donate", "options"],
+    "offset": 0
+}
