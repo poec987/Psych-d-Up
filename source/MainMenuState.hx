@@ -44,7 +44,7 @@ typedef StyleSettings =
 
 class MainMenuState extends MusicBeatState
 {
-	var bg:FlxSprite = new FlxSprite( -89).loadGraphic(Paths.image('menuBG'));
+	var bg:FlxSprite = new FlxSprite( -89).loadGraphic(Paths.image('mainmenu/'+ClientPrefs.menuStyle+'/menuBG'));
 	var gradientBar:FlxSprite = new FlxSprite(0, 0).makeGraphic(FlxG.width, 300, 0xFFde6f00);
 	
 	public static var styleList:StyleList = getStyleFile('assets/images/mainmenu/styles.json');
