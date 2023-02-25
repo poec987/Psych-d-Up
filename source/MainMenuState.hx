@@ -36,7 +36,8 @@ typedef StyleList =
 
 class MainMenuState extends MusicBeatState
 {
-
+	var bg:FlxSprite = new FlxSprite(-80).loadGraphic(Paths.image('menuBG'));
+	
 	public static var styleList:StyleList = getStyleFile('assets/images/mainmenu/styles.json');
 
 	public static var psychEngineVersion:String = '0.6.3'; //This is also used for Discord RPC
