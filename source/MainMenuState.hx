@@ -10,6 +10,7 @@ import flixel.FlxObject;
 import flixel.FlxSprite;
 import flixel.FlxCamera;
 import flixel.addons.transition.FlxTransitionableState;
+import flixel.addons.display.FlxBackdrop;
 import flixel.effects.FlxFlicker;
 import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.group.FlxGroup.FlxTypedGroup;
@@ -46,7 +47,8 @@ typedef StyleSettings =
 
 class MainMenuState extends MusicBeatState
 {
-	var bg:FlxSprite = new FlxSprite( -89).loadGraphic(Paths.image('mainmenu/'+ClientPrefs.menuStyle+'/menuBG'));
+	var bg:FlxSprite = new FlxSprite( -89).loadGraphic(Paths.image('mainmenu/' + ClientPrefs.menuStyle+'/menuBG'));
+	var checker:FlxBackdrop = new FlxBackdrop(Paths.image('mainmenu/' + ClientPrefs.menuStyle +'/Main_Checker'), 0.2, 0.2, true, true);
 	var gradientBar:FlxSprite = new FlxSprite(0, 0).makeGraphic(FlxG.width, 300, 0xFFde6f00);
 	
 	public static var styleList:StyleList = getStyleFile('assets/images/mainmenu/styles.json');
@@ -151,6 +153,9 @@ class MainMenuState extends MusicBeatState
 			gradientBar.y = FlxG.height - gradientBar.height;
 			add(gradientBar);
 			gradientBar.scrollFactor.set(0, 0);
+			
+			add(checker);
+			checker.scrollFactor.set(0, 0.07);
 		}
 
 		magenta = new FlxSprite(-80).loadGraphic(Paths.image('menuDesat'));
@@ -255,6 +260,9 @@ class MainMenuState extends MusicBeatState
 		var lerpVal:Float = CoolUtil.boundTo(elapsed * 7.5, 0, 1);
 		camFollowPos.setPosition(FlxMath.lerp(camFollowPos.x, camFollow.x, lerpVal), FlxMath.lerp(camFollowPos.y, camFollow.y, lerpVal));
 
+		checker.x -= 0.45;
+		checker.y -= 0.16;
+		
 		if (!selectedSomethin)
 		{
 			if (controls.UI_UP_P)
