@@ -52,6 +52,9 @@ class FreeplayState extends MusicBeatState
 	var intendedColor:Int;
 	var colorTween:FlxTween;
 
+	var disc:FlxSprite = new FlxSprite(-200, 730);
+	var discIcon:HealthIcon = new HealthIcon("bf");
+	
 	override function create()
 	{
 		//Paths.clearStoredMemory();
@@ -107,6 +110,14 @@ class FreeplayState extends MusicBeatState
 		bg.antialiasing = ClientPrefs.globalAntialiasing;
 		add(bg);
 		bg.screenCenter();
+		
+		var tex = Paths.getSparrowAtlas('Freeplay_Discs');
+		disc.frames = tex;
+		disc.animation.addByPrefix("dad", "dad", 24);
+		disc.animation.play("dad");
+		add(disc);
+		add(discIcon);
+		discIcon.antialiasing = disc.antialiasing = true;
 
 		grpSongs = new FlxTypedGroup<Alphabet>();
 		add(grpSongs);
@@ -132,7 +143,7 @@ class FreeplayState extends MusicBeatState
 
 			// using a FlxGroup is too much fuss!
 			iconArray.push(icon);
-			add(icon);
+			//add(icon);
 
 			// songText.x += 40;
 			// DONT PUT X IN THE FIRST PARAMETER OF new ALPHABET() !!
@@ -204,7 +215,10 @@ class FreeplayState extends MusicBeatState
 		
 		FlxG.camera.zoom = 0.6;
 		FlxG.camera.alpha = 0;
+		FlxTween.tween(bg, {alpha: 1}, 0.5, {ease: FlxEase.quartInOut});
 		FlxTween.tween(FlxG.camera, {zoom: 1, alpha: 1}, 0.5, {ease: FlxEase.quartInOut});
+		disc.scale.x = 0;
+		FlxTween.tween(disc, {'scale.x': 1, y: 480, x: -25}, 0.5, {ease: FlxEase.quartInOut});
 	}
 
 	override function closeSubState() {
@@ -325,7 +339,9 @@ class FreeplayState extends MusicBeatState
 				colorTween.cancel();
 			}
 			FlxG.sound.play(Paths.sound('cancelMenu'));
+			
 			FlxTween.tween(FlxG.camera, {zoom: 0.6, alpha: -0.6}, 0.7, {ease: FlxEase.quartInOut});
+			FlxTween.tween(disc, {alpha: 0, 'scale.x': 0}, 0.3, {ease: FlxEase.quartInOut});
 			FlxTween.tween(bg, {alpha: 0}, 0.7, {ease: FlxEase.quartInOut});
 			MusicBeatState.switchState(new MainMenuState());
 		}
@@ -382,6 +398,7 @@ class FreeplayState extends MusicBeatState
 			PlayState.storyDifficulty = curDifficulty;
 			
 			FlxTween.tween(bg, {alpha: 0}, 0.6, {ease: FlxEase.quartInOut});
+			FlxTween.tween(disc, {alpha: 0, 'scale.x': 0}, 0.8, {ease: FlxEase.quartInOut});
 			for (item in grpSongs.members)
 			{
 				FlxTween.tween(item, {alpha: 0}, 0.9, {ease: FlxEase.quartInOut});
@@ -409,6 +426,10 @@ class FreeplayState extends MusicBeatState
 			FlxG.sound.play(Paths.sound('scrollMenu'));
 		}
 		super.update(elapsed);
+		discIcon.x = disc.x + disc.width / 2 - discIcon.width / 2;
+		discIcon.y = disc.y + disc.height / 2 - discIcon.height / 2;
+		discIcon.angle = disc.angle += 0.6;
+		discIcon.scale.set(disc.scale.x, disc.scale.y);
 	}
 
 	public static function destroyFreeplayVocals() {
@@ -537,6 +558,13 @@ class FreeplayState extends MusicBeatState
 		{
 			curDifficulty = newPos;
 		}
+		disc.animation.addByPrefix(songs[curSelected].songCharacter, songs[curSelected].songCharacter, 24);
+		disc.animation.play(songs[curSelected].songCharacter);
+
+		remove(discIcon);
+		discIcon = new HealthIcon(songs[curSelected].songCharacter);
+		add(discIcon);
+		discIcon.animation.play(songs[curSelected].songCharacter);
 	}
 
 	private function positionHighscore() {
