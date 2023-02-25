@@ -21,12 +21,27 @@ import Achievements;
 import editors.MasterEditorMenu;
 import flixel.input.keyboard.FlxKey;
 
+import sys.io.File;
+import sys.FileSystem;
+import haxe.Json;
+import haxe.format.JsonParser;
+
 using StringTools;
+
+typedef StyleList =
+{
+	var styles:Array<String>;
+} 
 
 class MainMenuState extends MusicBeatState
 {
+
+	public static var styleList:StyleList = getStyleFile('assets/images/mainmenu/styles.json');
+
 	public static var psychEngineVersion:String = '0.6.3'; //This is also used for Discord RPC
 	public static var curSelected:Int = 0;
+
+	public static var menuStyles:Array<String> = ["PsychStyle"];
 
 	var menuItems:FlxTypedGroup<FlxSprite>;
 	private var camGame:FlxCamera;
@@ -53,6 +68,12 @@ class MainMenuState extends MusicBeatState
 		Paths.pushGlobalMods();
 		#end
 		WeekData.loadTheFirstEnabledMod();
+
+		#if MODS_ALLOWED
+		styleList = getStyleFile('mods/images/mainmenu/styles.json');
+		#end
+
+		menuStyles = styleList.styles;
 
 		#if desktop
 		// Updating Discord Rich Presence
@@ -113,7 +134,7 @@ class MainMenuState extends MusicBeatState
 			var menuItem:FlxSprite = new FlxSprite(0, (i * 140)  + offset);
 			menuItem.scale.x = scale;
 			menuItem.scale.y = scale;
-			menuItem.frames = Paths.getSparrowAtlas('mainmenu/menu_' + optionShit[i]);
+			menuItem.frames = Paths.getSparrowAtlas('mainmenu/'+ClientPrefs.menuStyle+'/menu_' + optionShit[i]);
 			menuItem.animation.addByPrefix('idle', optionShit[i] + " basic", 24);
 			menuItem.animation.addByPrefix('selected', optionShit[i] + " white", 24);
 			menuItem.animation.play('idle');
@@ -297,5 +318,23 @@ class MainMenuState extends MusicBeatState
 				spr.centerOffsets();
 			}
 		});
+	}
+
+	private static function getStyleFile(path:String):StyleList {
+		var rawJson:String = null;
+		#if MODS_ALLOWED
+		if(FileSystem.exists(path)) {
+			rawJson = File.getContent(path);
+		}
+		#else
+		if(OpenFlAssets.exists(path)) {
+			rawJson = Assets.getText(path);
+		}
+		#end
+
+		if(rawJson != null && rawJson.length > 0) {
+			return cast Json.parse(rawJson);
+		}
+		return null;
 	}
 }
