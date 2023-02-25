@@ -5,6 +5,8 @@ import Discord.DiscordClient;
 #end
 import editors.ChartingState;
 import flash.text.TextField;
+import flixel.tweens.FlxEase;
+import flixel.tweens.FlxTween;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.addons.display.FlxGridOverlay;
@@ -111,9 +113,10 @@ class FreeplayState extends MusicBeatState
 
 		for (i in 0...songs.length)
 		{
-			var songText:Alphabet = new Alphabet(90, 320, songs[i].songName, true);
-			songText.isMenuItem = true;
-			songText.targetY = i - curSelected;
+			var songText:Alphabet = new Alphabet(0, (65 * i) + 30, songs[i].songName, true);
+			//songText.isMenuItem = true;
+			songText.itemType = "C-Shape";
+			songText.targetY = i;
 			grpSongs.add(songText);
 
 			var maxWidth = 980;
@@ -198,6 +201,10 @@ class FreeplayState extends MusicBeatState
 		text.scrollFactor.set();
 		add(text);
 		super.create();
+		
+		FlxG.camera.zoom = 0.6;
+		FlxG.camera.alpha = 0;
+		FlxTween.tween(FlxG.camera, {zoom: 1, alpha: 1}, 0.5, {ease: FlxEase.quartInOut});
 	}
 
 	override function closeSubState() {
@@ -318,6 +325,8 @@ class FreeplayState extends MusicBeatState
 				colorTween.cancel();
 			}
 			FlxG.sound.play(Paths.sound('cancelMenu'));
+			FlxTween.tween(FlxG.camera, {zoom: 0.6, alpha: -0.6}, 0.7, {ease: FlxEase.quartInOut});
+			FlxTween.tween(bg, {alpha: 0}, 0.7, {ease: FlxEase.quartInOut});
 			MusicBeatState.switchState(new MainMenuState());
 		}
 
@@ -371,6 +380,12 @@ class FreeplayState extends MusicBeatState
 			PlayState.SONG = Song.loadFromJson(poop, songLowercase);
 			PlayState.isStoryMode = false;
 			PlayState.storyDifficulty = curDifficulty;
+			
+			FlxTween.tween(bg, {alpha: 0}, 0.6, {ease: FlxEase.quartInOut});
+			for (item in grpSongs.members)
+			{
+				FlxTween.tween(item, {alpha: 0}, 0.9, {ease: FlxEase.quartInOut});
+			}
 
 			trace('CURRENT WEEK: ' + WeekData.getWeekFileName());
 			if(colorTween != null) {
