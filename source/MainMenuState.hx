@@ -4,6 +4,7 @@ package;
 import Discord.DiscordClient;
 #end
 import flixel.util.FlxTimer;
+import flixel.util.FlxGradient;
 import flixel.FlxG;
 import flixel.FlxObject;
 import flixel.FlxSprite;
@@ -36,7 +37,8 @@ typedef StyleList =
 
 class MainMenuState extends MusicBeatState
 {
-	var bg:FlxSprite = new FlxSprite(-80).loadGraphic(Paths.image('menuBG'));
+	var bg:FlxSprite = new FlxSprite( -89).loadGraphic(Paths.image('menuBG'));
+	var gradientBar:FlxSprite = new FlxSprite(0, 0).makeGraphic(FlxG.width, 300, 0xFFde6f00);
 	
 	public static var styleList:StyleList = getStyleFile('assets/images/mainmenu/styles.json');
 
@@ -103,7 +105,7 @@ class MainMenuState extends MusicBeatState
 
 		var yScroll:Float = Math.max(0.25 - (0.05 * (optionShit.length - 4)), 0.1);
 		bg.scrollFactor.set(0, yScroll);
-		bg.setGraphicSize(Std.int(bg.width * 1.175));
+		bg.setGraphicSize(Std.int(bg.width * 1.34));
 		bg.updateHitbox();
 		bg.screenCenter();
 		bg.antialiasing = ClientPrefs.globalAntialiasing;
@@ -114,6 +116,11 @@ class MainMenuState extends MusicBeatState
 		camFollowPos = new FlxObject(0, 0, 1, 1);
 		add(camFollow);
 		add(camFollowPos);
+		
+		gradientBar = FlxGradient.createGradientFlxSprite(Math.round(FlxG.width), 512, [0x00ff0000, 0x555b7c99, 0xAA3f6e96], 1, 90, true);
+		gradientBar.y = FlxG.height - gradientBar.height;
+		add(gradientBar);
+		gradientBar.scrollFactor.set(0, 0);
 
 		magenta = new FlxSprite(-80).loadGraphic(Paths.image('menuDesat'));
 		magenta.scrollFactor.set(0, yScroll);
@@ -161,6 +168,7 @@ class MainMenuState extends MusicBeatState
 		FlxG.camera.zoom = 3;
 		FlxTween.tween(FlxG.camera, {zoom: 1}, 1.1, {ease: FlxEase.expoInOut});
 		FlxTween.tween(bg, {angle: 0}, 1, {ease: FlxEase.quartInOut});
+		FlxTween.tween(bg, {width: 1.1}, 1, {ease: FlxEase.quartInOut});
 
 
 		var versionShit:FlxText = new FlxText(12, FlxG.height - 44, 0, "Psych Engine v" + psychEngineVersion, 12);
