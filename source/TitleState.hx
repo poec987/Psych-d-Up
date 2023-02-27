@@ -7,6 +7,7 @@ import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.FlxState;
 import flixel.input.keyboard.FlxKey;
+import flixel.util.FlxGradient;
 import flixel.addons.display.FlxGridOverlay;
 import flixel.addons.transition.FlxTransitionSprite.GraphicTransTileDiamond;
 import flixel.addons.transition.FlxTransitionableState;
@@ -58,9 +59,11 @@ class TitleState extends MusicBeatState
 	public static var initialized:Bool = false;
 
 	var blackScreen:FlxSprite;
+	var gradientBar:FlxSprite = new FlxSprite(0, 0).makeGraphic(FlxG.width, 1, 0xFFAA00AA);
 	var credGroup:FlxGroup;
 	var credTextShit:Alphabet;
 	var textGroup:FlxGroup;
+	var fnfSpr:FlxSprite;
 	var ngSpr:FlxSprite;
 	
 	var titleTextColors:Array<FlxColor> = [0xFF33FFFF, 0xFF3333CC];
@@ -271,7 +274,7 @@ class TitleState extends MusicBeatState
 		// bg.updateHitbox();
 		add(bg);
 
-		logoBl = new FlxSprite(titleJSON.titlex, titleJSON.titley);
+		logoBl = new FlxSprite(142, -17);
 		logoBl.frames = Paths.getSparrowAtlas('logoBumpin');
 
 		logoBl.antialiasing = ClientPrefs.globalAntialiasing;
@@ -282,7 +285,7 @@ class TitleState extends MusicBeatState
 		// logoBl.color = FlxColor.BLACK;
 
 		swagShader = new ColorSwap();
-		gfDance = new FlxSprite(titleJSON.gfx, titleJSON.gfy);
+		gfDance = new FlxSprite(FlxG.width * 0.35, FlxG.height * 1.2);
 
 		var easterEgg:String = FlxG.save.data.psychDevsEasterEgg;
 		if(easterEgg == null) easterEgg = ''; //html5 fix
@@ -379,6 +382,13 @@ class TitleState extends MusicBeatState
 
 		blackScreen = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
 		credGroup.add(blackScreen);
+		
+		gradientBar = FlxGradient.createGradientFlxSprite(Math.round(FlxG.width), 512, [0x00ff0000, 0x553D0468, 0xAABF1943], 1, 90, true);
+		gradientBar.y = FlxG.height - gradientBar.height;
+		gradientBar.scale.y = 0;
+		gradientBar.updateHitbox();
+		add(gradientBar);
+		FlxTween.tween(gradientBar, {'scale.y': 1.3}, 4, {ease: FlxEase.quadInOut});
 
 		credTextShit = new Alphabet(0, 0, "", true);
 		credTextShit.screenCenter();
@@ -386,6 +396,13 @@ class TitleState extends MusicBeatState
 		// credTextShit.alignment = CENTER;
 
 		credTextShit.visible = false;
+		
+		fnfSpr = new FlxSprite(0, FlxG.height * 0.47).loadGraphic(Paths.image('logo'));
+		add(fnfSpr);
+		fnfSpr.visible = false;
+		fnfSpr.setGraphicSize(Std.int(fnfSpr.width * 0.8));
+		fnfSpr.updateHitbox();
+		fnfSpr.antialiasing = true;
 
 		ngSpr = new FlxSprite(0, FlxG.height * 0.52).loadGraphic(Paths.image('newgrounds_logo'));
 		add(ngSpr);
@@ -431,6 +448,9 @@ class TitleState extends MusicBeatState
 		if (FlxG.sound.music != null)
 			Conductor.songPosition = FlxG.sound.music.time;
 		// FlxG.watch.addQuick('amp', FlxG.sound.music.amplitude);
+		
+		if (skippedIntro)
+			logoBl.angle = Math.sin(titleTimer / 270) * 5;
 
 		var pressedEnter:Bool = FlxG.keys.justPressed.ENTER || controls.ACCEPT;
 
@@ -461,6 +481,10 @@ class TitleState extends MusicBeatState
 			titleTimer += CoolUtil.boundTo(elapsed, 0, 1);
 			if (titleTimer > 2) titleTimer -= 2;
 		}
+		
+		gradientBar.scale.y += Math.sin(titleTimer / 10) * 0.001;
+		gradientBar.updateHitbox();
+		gradientBar.y = FlxG.height - gradientBar.height;
 
 		// EASTER EGG
 
@@ -490,6 +514,8 @@ class TitleState extends MusicBeatState
 
 				transitioning = true;
 				// FlxG.sound.music.stop();
+				
+				FlxTween.tween(FlxG.camera, {y: FlxG.height}, 1.6, {ease: FlxEase.expoIn, startDelay: 0.4});
 
 				new FlxTimer().start(1, function(tmr:FlxTimer)
 				{
@@ -573,24 +599,27 @@ class TitleState extends MusicBeatState
 		for (i in 0...textArray.length)
 		{
 			var money:Alphabet = new Alphabet(0, 0, textArray[i], true);
-			money.screenCenter(X);
-			money.y += (i * 60) + 200 + offset;
-			if(credGroup != null && textGroup != null) {
-				credGroup.add(money);
-				textGroup.add(money);
-			}
+			money.x = -1500;
+			FlxTween.quadMotion(money, -300, -100, 30 + (i * 70), 150 + (i * 130), 100 + (i * 70), 80 + (i * 130), 0.4, true, {ease: FlxEase.quadInOut});
+			credGroup.add(money);
+			textGroup.add(money);
 		}
 	}
 
 	function addMoreText(text:String, ?offset:Float = 0)
 	{
-		if(textGroup != null && credGroup != null) {
-			var coolText:Alphabet = new Alphabet(0, 0, text, true);
-			coolText.screenCenter(X);
-			coolText.y += (textGroup.length * 60) + 200 + offset;
-			credGroup.add(coolText);
-			textGroup.add(coolText);
-		}
+		var coolText:Alphabet = new Alphabet(0, 0, text, true);
+		coolText.x = -1500;
+		FlxTween.quadMotion(coolText, -300, -100, 10
+			+ (textGroup.length * 40), 150
+			+ (textGroup.length * 130), 30
+			+ (textGroup.length * 40),
+			80
+			+ (textGroup.length * 130), 0.4, true, {
+				ease: FlxEase.quadInOut
+			});
+		credGroup.add(coolText);
+		textGroup.add(coolText);
 	}
 
 	function deleteCoolText()
@@ -653,15 +682,23 @@ class TitleState extends MusicBeatState
 					#if PSYCH_WATERMARKS
 					createCoolText(['Not associated', 'with'], -40);
 					#else
-					createCoolText(['In association', 'with'], -40);
+					createCoolText(['A modification', 'for']);
 					#end
 				case 8:
-					addMoreText('newgrounds', -40);
-					ngSpr.visible = true;
+					fnfSpr.x = -1500;
+					fnfSpr.visible = true;
+					FlxTween.quadMotion(fnfSpr, -700, -700, 50
+					+ (textGroup.length * 130), 150
+					+ (textGroup.length * 50), 100
+					+ (textGroup.length * 130),
+					80
+					+ (textGroup.length * 50), 0.4, true, {
+						ease: FlxEase.quadInOut
+					});
 				// credTextShit.text += '\nNewgrounds';
 				case 9:
 					deleteCoolText();
-					ngSpr.visible = false;
+					fnfSpr.visible = false;
 				// credTextShit.visible = false;
 
 				// credTextShit.text = 'Shoutouts Tom Fulp';
@@ -757,6 +794,15 @@ class TitleState extends MusicBeatState
 				remove(ngSpr);
 				remove(credGroup);
 				FlxG.camera.flash(FlxColor.WHITE, 4);
+				
+				FlxTween.tween(logoBl, {
+				'scale.x': 0.85,
+				'scale.y': 0.85,
+				x: titleJSON.titlex,
+				y: titleJSON.titley
+				}, 1.3, {ease: FlxEase.expoInOut, startDelay: 1.3});
+				FlxTween.tween(gfDance, {y: titleJSON.gfy}, 2.3, {ease: FlxEase.expoInOut, startDelay: 0.8});
+				FlxTween.tween(gfDance, {x: titleJSON.gfx}, 2.3, {ease: FlxEase.expoInOut, startDelay: 0.8});
 
 				var easteregg:String = FlxG.save.data.psychDevsEasterEgg;
 				if (easteregg == null) easteregg = '';
