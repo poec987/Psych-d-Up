@@ -2,8 +2,8 @@
 	"confirm_anim": "M Dad Idle",
 	"idle_anim": "M Parents Idle",
 	"position": [
-		197,
-		33
+		300,
+		30
 	],
 	"scale": 0.5,
 	"image": "Menu_Parents"

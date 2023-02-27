@@ -146,6 +146,7 @@ class PlayState extends MusicBeatState
 	public static var storyWeek:Int = 0;
 	public static var storyPlaylist:Array<String> = [];
 	public static var storyDifficulty:Int = 1;
+	public static var curDeaths:Int = 0;
 
 	public var spawnTime:Float = 2000;
 
@@ -2815,7 +2816,7 @@ class PlayState extends MusicBeatState
 
 	override public function update(elapsed:Float)
 	{
-		/*if (FlxG.keys.justPressed.NINE)
+		/*if (FlxG.keys..NINE)
 		{
 			iconP1.swapOldIcon();
 		}*/
@@ -2950,6 +2951,8 @@ class PlayState extends MusicBeatState
 					}
 				}
 		}
+		
+		
 
 		if(!inCutscene) {
 			var lerpVal:Float = CoolUtil.boundTo(elapsed * 2.4 * cameraSpeed * playbackRate, 0, 1);
@@ -2986,6 +2989,7 @@ class PlayState extends MusicBeatState
 		{
 			openChartEditor();
 		}
+		
 
 		// FlxG.watch.addQuick('VOL', vocals.amplitudeLeft);
 		// FlxG.watch.addQuick('VOLRight', vocals.amplitudeRight);
@@ -3297,6 +3301,7 @@ class PlayState extends MusicBeatState
 
 	function openChartEditor()
 	{
+		curDeaths = 0;
 		persistentUpdate = false;
 		paused = true;
 		cancelMusicFadeTween();
@@ -3316,6 +3321,12 @@ class PlayState extends MusicBeatState
 			if(ret != FunkinLua.Function_Stop) {
 				boyfriend.stunned = true;
 				deathCounter++;
+				
+				if (!chartingMode)
+				{
+					Highscore.saveDeaths(SONG.song, 1, storyDifficulty);
+					curDeaths++;
+				}
 
 				paused = true;
 
@@ -3871,6 +3882,7 @@ class PlayState extends MusicBeatState
 
 		deathCounter = 0;
 		seenCutscene = false;
+		curDeaths = 0;
 
 		#if ACHIEVEMENTS_ALLOWED
 		if(achievementObj != null) {
