@@ -90,36 +90,6 @@ class StoryMenuState extends MusicBeatState
 		checker = new FlxBackdrop(Paths.image('Week_Checker'), 0.2, 0.2, true, true);
 		add(checker);
 		checker.scrollFactor.set(0, 0.07);
-		
-		side = new FlxSprite(0).loadGraphic(Paths.image('Week_Top'));
-		side.scrollFactor.x = 0;
-		side.scrollFactor.y = 0;
-		side.antialiasing = true;
-		side.screenCenter();
-		add(side);
-		side.y = 0 - side.height;
-		side.x = FlxG.width / 2 - side.width / 2;
-
-		bottom = new FlxSprite(0).loadGraphic(Paths.image('Week_Bottom'));
-		bottom.scrollFactor.x = 0;
-		bottom.scrollFactor.y = 0;
-		bottom.antialiasing = true;
-		bottom.screenCenter();
-		add(bottom);
-		bottom.y = FlxG.height + bottom.height;
-
-		scoreText = new FlxText(10, 10, 0, "SCORE: 49324858", 36);
-		scoreText.setFormat("VCR OSD Mono", 32);
-
-		txtWeekTitle = new FlxText(FlxG.width * 0.7, 10, 0, "", 32);
-		txtWeekTitle.setFormat("VCR OSD Mono", 32, FlxColor.WHITE, RIGHT);
-		txtWeekTitle.alpha = 0.7;
-
-		var rankText:FlxText = new FlxText(0, 10);
-		rankText.text = 'RANK: GREAT';
-		rankText.setFormat(Paths.font("vcr.ttf"), 32);
-		rankText.size = scoreText.size;
-		rankText.screenCenter(X);
 
 		var ui_tex = Paths.getSparrowAtlas('campaign_menu_UI_assets');
 
@@ -168,6 +138,36 @@ class StoryMenuState extends MusicBeatState
 				num++;
 			}
 		}
+		
+		side = new FlxSprite(0).loadGraphic(Paths.image('Week_Top'));
+		side.scrollFactor.x = 0;
+		side.scrollFactor.y = 0;
+		side.antialiasing = true;
+		side.screenCenter();
+		add(side);
+		side.y = 0 - side.height;
+		side.x = FlxG.width / 2 - side.width / 2;
+
+		bottom = new FlxSprite(0).loadGraphic(Paths.image('Week_Bottom'));
+		bottom.scrollFactor.x = 0;
+		bottom.scrollFactor.y = 0;
+		bottom.antialiasing = true;
+		bottom.screenCenter();
+		add(bottom);
+		bottom.y = FlxG.height + bottom.height;
+
+		scoreText = new FlxText(10, 10, 0, "SCORE: 49324858", 36);
+		scoreText.setFormat("VCR OSD Mono", 32);
+
+		txtWeekTitle = new FlxText(FlxG.width * 0.7, 40, 0, "", 32);
+		txtWeekTitle.setFormat("VCR OSD Mono", 32, FlxColor.WHITE, RIGHT);
+		txtWeekTitle.alpha = 0.7;
+		
+		var rankText:FlxText = new FlxText(0, 10);
+		rankText.text = 'RANK: GREAT';
+		rankText.setFormat(Paths.font("vcr.ttf"), 32);
+		rankText.size = scoreText.size;
+		rankText.screenCenter(X);
 
 		WeekData.setDirectoryFromWeek(loadedWeeks[0]);
 		var charArray:Array<String> = loadedWeeks[0].weekCharacters;
@@ -402,7 +402,7 @@ class StoryMenuState extends MusicBeatState
 			sprDifficulty.loadGraphic(newImage);
 			sprDifficulty.alpha = 0;
 
-			FlxTween.tween(sprDifficulty, {y: txtWeekTitle.y + 62, alpha: 1}, 0.07);
+			FlxTween.tween(sprDifficulty, {y: scoreText.y + 67, alpha: 1}, 0.07);
 		}
 		lastDifficultyName = diff;
 
