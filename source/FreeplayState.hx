@@ -325,7 +325,7 @@ class FreeplayState extends MusicBeatState
 
 		lerpScore = Math.floor(FlxMath.lerp(lerpScore, intendedScore, CoolUtil.boundTo(elapsed * 24, 0, 1)));
 		lerpRating = FlxMath.lerp(lerpRating, intendedRating, CoolUtil.boundTo(elapsed * 12, 0, 1));
-		lerpDeath = Math.floor(FlxMath.lerp(lerpDeath, intendedDeath, CoolUtil.boundTo(elapsed * 24, 0, 1)));
+		lerpDeath = Math.floor(FlxMath.lerp(lerpDeath, intendedDeath, 0.5));
 
 		if (Math.abs(lerpScore - intendedScore) <= 10)
 			lerpScore = intendedScore;
