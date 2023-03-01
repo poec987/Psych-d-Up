@@ -1,5 +1,5 @@
 {
-    "defaultButtons": true,
+    "defaultButtons": false,
     "buttons": ["play", "mods", "awards", "credits", "donate", "options"],
     "offset": 0,
     "hasGradient": true,
