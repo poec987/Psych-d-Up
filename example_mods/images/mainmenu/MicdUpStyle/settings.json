@@ -1,6 +1,6 @@
 {
     "defaultButtons": true,
-    "buttons": ["story_mode", "freeplay", "mods", "awards", "credits", "donate", "options"],
+    "buttons": ["play", "mods", "awards", "credits", "donate", "options"],
     "offset": 0,
     "hasGradient": true,
     "gradientColor": ["0x00ff0000", "0x55AE59E4", "0xAA19ECFF"]
