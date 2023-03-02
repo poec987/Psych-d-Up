@@ -89,6 +89,9 @@ class TitleState extends MusicBeatState
 
 	override public function create():Void
 	{
+		ModifierVariables.modifierSetup();
+		ModifierVariables.loadCurrent();
+		
 		Paths.clearStoredMemory();
 		Paths.clearUnusedMemory();
 

@@ -167,7 +167,7 @@ class PlayMenuState extends MusicBeatState
 
 			if (controls.ACCEPT)
 			{
-				if (optionShit[curSelected] == 'marathon' || optionShit[curSelected] == 'endless' || optionShit[curSelected] == 'survival' || optionShit[curSelected] == 'modifier')
+				if (optionShit[curSelected] == 'marathon' || optionShit[curSelected] == 'endless' || optionShit[curSelected] == 'survival')
 				{
 					FlxG.camera.shake(0.05, 0.15);
 					FlxG.sound.play(Paths.sound('locked'));
@@ -208,6 +208,9 @@ class PlayMenuState extends MusicBeatState
 									case 'freeplay':
 										FlxG.switchState(new FreeplayState());
 										DiscordClient.changePresence("Am bored, so I freeplay.",  null);
+									case 'modifier':
+									FlxG.switchState(new ModifierState());
+									DiscordClient.changePresence("Time to spice the game.",  null);
 								}
 							});
 					});
