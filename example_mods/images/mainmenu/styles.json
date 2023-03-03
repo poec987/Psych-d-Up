@@ -1,7 +1,7 @@
 {
     "styles": [
-        "PsychStyle",
 		"MicdUpStyle",
+        "PsychStyle",
         "FunkinStyle",
         "DarkMode",
         "GradientPsych"

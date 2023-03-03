@@ -33,6 +33,7 @@ import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.ui.FlxBar;
 import flixel.util.FlxCollision;
+import ModifierVariables._modifiers;
 import flixel.util.FlxColor;
 import flixel.util.FlxSort;
 import flixel.util.FlxStringUtil;
@@ -130,7 +131,7 @@ class PlayState extends MusicBeatState
 	public var GF_Y:Float = 130;
 
 	public var songSpeedTween:FlxTween;
-	public var songSpeed(default, set):Float = 1;
+	public var songSpeed:Float = _modifiers.Vibe;
 	public var songSpeedType:String = "multiplicative";
 	public var noteKillOffset:Float = 350;
 
@@ -337,7 +338,7 @@ class PlayState extends MusicBeatState
 		debugKeysChart = ClientPrefs.copyKey(ClientPrefs.keyBinds.get('debug_1'));
 		debugKeysCharacter = ClientPrefs.copyKey(ClientPrefs.keyBinds.get('debug_2'));
 		PauseSubState.songName = null; //Reset to default
-		playbackRate = ClientPrefs.getGameplaySetting('songspeed', 1);
+		playbackRate = songSpeed;
 
 		keysArray = [
 			ClientPrefs.copyKey(ClientPrefs.keyBinds.get('note_left')),
@@ -2504,6 +2505,28 @@ class PlayState extends MusicBeatState
 				if(!noteTypeMap.exists(swagNote.noteType)) {
 					noteTypeMap.set(swagNote.noteType, true);
 				}
+				var jackNote:Note;
+
+				if (_modifiers.JacktasticSwitch)
+				{
+					for (i in 0...Std.int(_modifiers.Jacktastic))
+					{
+						jackNote = new Note(swagNote.strumTime + 70 * (i + 1), swagNote.noteData, oldNote, false);
+						jackNote.scrollFactor.set(0, 0);
+
+						if (_modifiers.WidenSwitch)
+							jackNote.scale.x *= _modifiers.Widen / 100 + 1;
+						if (_modifiers.StretchSwitch)
+							jackNote.scale.y *= _modifiers.Stretch / 100 + 1;
+
+						unspawnNotes.push(jackNote);
+
+						jackNote.mustPress = swagNote.mustPress;
+
+
+						jackNote.x += FlxG.width / 2; // general offset
+					}
+				}
 			}
 			daBeats += 1;
 		}
@@ -3745,7 +3768,7 @@ class PlayState extends MusicBeatState
 				}
 				else
 				{
-					songSpeedTween = FlxTween.tween(this, {songSpeed: newValue}, val2 / playbackRate, {ease: FlxEase.linear, onComplete:
+					songSpeedTween = FlxTween.tween(this, {songspeed: newValue}, val2 / playbackRate, {ease: FlxEase.linear, onComplete:
 						function (twn:FlxTween)
 						{
 							songSpeedTween = null;

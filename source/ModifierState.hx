@@ -308,8 +308,11 @@ class ModifierState extends MusicBeatState
 
 				if (controls.ACCEPT)
 				{
+					substated = true;
 
 					FlxG.sound.play(Paths.sound('confirmMenu'));
+					
+					FlxG.state.openSubState(new Substate_Preset());
 
 				}
 			}
