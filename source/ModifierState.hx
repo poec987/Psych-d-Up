@@ -230,8 +230,8 @@ class ModifierState extends MusicBeatState
 
     override function update(elapsed:Float)
         {
-            checker.x -= 0.03;
-		    checker.y -= 0.20;
+            checker.x -= 0.03 / (ClientPrefs.framerate / 60);
+		    checker.y -= 0.20 / (ClientPrefs.framerate / 60);
 
 			multi.x = FlxG.width - (multi.width + 60);
 			multi.text = "MULTIPLIER: "+fakeMP;
@@ -328,7 +328,7 @@ class ModifierState extends MusicBeatState
 
 					if (spr.ID == curSelected)
 					{
-						camFollow.x = FlxMath.lerp(camFollow.x, spr.getGraphicMidpoint().x - 35, camLerp);
+						camFollow.x = FlxMath.lerp(camFollow.x, spr.getGraphicMidpoint().x - 35, camLerp / (ClientPrefs.framerate / 60));
 						name.text = modifierList[spr.ID].name.toUpperCase();
 						explain.text = modifierList[spr.ID].explanation;
 					}

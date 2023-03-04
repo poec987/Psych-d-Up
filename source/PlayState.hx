@@ -61,10 +61,10 @@ import StageData;
 import FunkinLua;
 import DialogueBoxPsych;
 import Conductor.Rating;
+import openfl.filters.ShaderFilter;
 
 #if !flash 
 import flixel.addons.display.FlxRuntimeShader;
-import openfl.filters.ShaderFilter;
 #end
 
 #if sys
@@ -202,6 +202,8 @@ class PlayState extends MusicBeatState
 	private var updateTime:Bool = true;
 	public static var changedDifficulty:Bool = false;
 	public static var chartingMode:Bool = false;
+	
+	public var camSus:FlxCamera; // sussy!!1!11
 
 	//Gameplay settings
 	public var healthGain:Float = 1;
@@ -298,6 +300,8 @@ class PlayState extends MusicBeatState
 	var detailsText:String = "";
 	var detailsPausedText:String = "";
 	#end
+	
+	var susWiggle:ShaderFilter;
 
 	//Achievement shit
 	var keysPressed:Array<Bool> = [];
@@ -397,8 +401,14 @@ class PlayState extends MusicBeatState
 		camOther = new FlxCamera();
 		camHUD.bgColor.alpha = 0;
 		camOther.bgColor.alpha = 0;
+		camSus = new FlxCamera();
+		camSus.bgColor.alpha = 0;
+		camSus.alpha = 0;
+		camSus.flashSprite.width = camSus.flashSprite.width * 2;
+		camSus.flashSprite.height = camSus.flashSprite.height * 2;
 
 		FlxG.cameras.reset(camGame);
+		FlxG.cameras.add(camSus);
 		FlxG.cameras.add(camHUD, false);
 		FlxG.cameras.add(camOther, false);
 		grpNoteSplashes = new FlxTypedGroup<NoteSplash>();
@@ -1014,6 +1024,23 @@ class PlayState extends MusicBeatState
 		strumLine = new FlxSprite(ClientPrefs.middleScroll ? STRUM_X_MIDDLESCROLL : STRUM_X, 50).makeGraphic(FlxG.width, 10);
 		if(ClientPrefs.downScroll) strumLine.y = FlxG.height - 150;
 		strumLine.scrollFactor.set();
+		
+		// le wiggle
+		wiggleShit.waveAmplitude = 0.07;
+		wiggleShit.effectType = WiggleEffect.WiggleEffectType.DREAMY;
+		wiggleShit.waveFrequency = 0;
+		wiggleShit.waveSpeed = 1.8; // fasto
+		wiggleShit.shader.uTime.value = [(strumLine.y - Note.swagWidth * 4) / FlxG.height]; // from 4mbr0s3 2
+		susWiggle = new ShaderFilter(wiggleShit.shader);
+		// le wiggle 2
+		var wiggleShit2:WiggleEffect = new WiggleEffect();
+		wiggleShit2.waveAmplitude = 0.10;
+		wiggleShit2.effectType = WiggleEffect.WiggleEffectType.HEAT_WAVE_VERTICAL;
+		wiggleShit2.waveFrequency = 0;
+		wiggleShit2.waveSpeed = 1.8; // fasto
+		wiggleShit2.shader.uTime.value = [(strumLine.y - Note.swagWidth * 4) / FlxG.height]; // from 4mbr0s3 2
+		var susWiggle2 = new ShaderFilter(wiggleShit2.shader);
+		camSus.setFilters([susWiggle]); // only enable it for snake notes
 
 		var showTime:Bool = (ClientPrefs.timeBarType != 'Disabled');
 		timeTxt = new FlxText(STRUM_X + (FlxG.width / 2) - 248, 19, 400, "", 32);
@@ -2451,11 +2478,19 @@ class PlayState extends MusicBeatState
 				swagNote.gfNote = (section.gfSection && (songNotes[1]<4));
 				swagNote.noteType = songNotes[3];
 				if(!Std.isOfType(songNotes[3], String)) swagNote.noteType = editors.ChartingState.noteTypeList[songNotes[3]]; //Backward compatibility + compatibility with Week 7 charts
-
+				
 				swagNote.scrollFactor.set();
+				
+				if (_modifiers.WidenSwitch)
+					swagNote.scale.x *= _modifiers.Widen / 100 + 1;
+				if (_modifiers.StretchSwitch && !swagNote.isSustainNote)
+					swagNote.scale.y *= _modifiers.Stretch / 100 + 1;
 
 				var susLength:Float = swagNote.sustainLength;
 
+				if (_modifiers.EelNotesSwitch)
+					susLength += 10 * _modifiers.EelNotes;
+				
 				susLength = susLength / Conductor.stepCrochet;
 				unspawnNotes.push(swagNote);
 
@@ -2991,6 +3026,11 @@ class PlayState extends MusicBeatState
 		}
 
 		super.update(elapsed);
+		
+		wiggleShit.waveAmplitude = FlxMath.lerp(wiggleShit.waveAmplitude, 0, 0.035 / (ClientPrefs.framerate / 60));
+		wiggleShit.waveFrequency = FlxMath.lerp(wiggleShit.waveFrequency, 0, 0.035 / (ClientPrefs.framerate / 60));
+
+		wiggleShit.update(elapsed);
 
 		setOnLuas('curDecStep', curDecStep);
 		setOnLuas('curDecBeat', curDecBeat);
@@ -3016,6 +3056,9 @@ class PlayState extends MusicBeatState
 
 		// FlxG.watch.addQuick('VOL', vocals.amplitudeLeft);
 		// FlxG.watch.addQuick('VOLRight', vocals.amplitudeRight);
+		
+		wiggleShit.waveAmplitude = 0.035;
+		wiggleShit.waveFrequency = 10;
 
 		var mult:Float = FlxMath.lerp(1, iconP1.scale.x, CoolUtil.boundTo(1 - (elapsed * 9 * playbackRate), 0, 1));
 		iconP1.scale.set(mult, mult);
@@ -3135,6 +3178,7 @@ class PlayState extends MusicBeatState
 
 		if (generatedMusic)
 		{
+			
 			if(!inCutscene)
 			{
 				if(!cpuControlled) {
@@ -3205,6 +3249,9 @@ class PlayState extends MusicBeatState
 								daNote.y += 27.5 * ((SONG.bpm / 100) - 1) * (songSpeed - 1);
 							}
 						}
+						
+						if (_modifiers.SnakeNotesSwitch && !daNote.isSustainNote)
+							daNote.x += (_modifiers.SnakeNotes * 0.025) * Math.sin(Conductor.songPosition / 300);
 
 						if (!daNote.mustPress && daNote.wasGoodHit && !daNote.hitByOpponent && !daNote.ignoreNote)
 						{

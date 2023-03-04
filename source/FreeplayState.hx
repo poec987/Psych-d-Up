@@ -323,8 +323,8 @@ class FreeplayState extends MusicBeatState
 			FlxG.sound.music.volume += 0.5 * FlxG.elapsed;
 		}
 		
-		checker.x -= -0.27;
-		checker.y -= 0.63;
+		checker.x -= -0.27 / (ClientPrefs.framerate / 60);
+		checker.y -= 0.63 / (ClientPrefs.framerate / 60);
 
 		lerpScore = Math.floor(FlxMath.lerp(lerpScore, intendedScore, CoolUtil.boundTo(elapsed * 24, 0, 1)));
 		lerpRating = FlxMath.lerp(lerpRating, intendedRating, CoolUtil.boundTo(elapsed * 12, 0, 1));
@@ -512,7 +512,7 @@ class FreeplayState extends MusicBeatState
 		super.update(elapsed);
 		discIcon.x = disc.x + disc.width / 2 - discIcon.width / 2;
 		discIcon.y = disc.y + disc.height / 2 - discIcon.height / 2;
-		discIcon.angle = disc.angle += 0.6;
+		discIcon.angle = disc.angle += 0.6 / (ClientPrefs.framerate / 60);
 		discIcon.scale.set(disc.scale.x, disc.scale.y);
 		scoreText.x = FlxG.width / 2 - scoreText.width / 2;
 		deathText.x = FlxG.width / 2 - deathText.width / 2;

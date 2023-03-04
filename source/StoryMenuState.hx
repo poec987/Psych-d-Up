@@ -232,8 +232,8 @@ class StoryMenuState extends MusicBeatState
 
 	override function update(elapsed:Float)
 	{
-		checker.x -= -0.12;
-		checker.y -= -0.34;
+		checker.x -= -0.12 / (ClientPrefs.framerate / 60);
+		checker.y -= -0.34 / (ClientPrefs.framerate / 60);
 		
 		// scoreText.setFormat('VCR OSD Mono', 32);
 		lerpScore = Math.floor(FlxMath.lerp(lerpScore, intendedScore, CoolUtil.boundTo(elapsed * 30, 0, 1)));

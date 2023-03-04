@@ -121,21 +121,21 @@ class PlayMenuState extends MusicBeatState
 		}
 		menuItems.forEach(function(spr:FlxSprite)
 			{
-				spr.scale.set(FlxMath.lerp(spr.scale.x, 0.5, 0.4), FlxMath.lerp(spr.scale.y, 0.5, 0.07));
+				spr.scale.set(FlxMath.lerp(spr.scale.x, 0.5, 0.4 / (ClientPrefs.framerate / 60)), FlxMath.lerp(spr.scale.y, 0.5, 0.07 / (ClientPrefs.framerate / 60)));
 				spr.y = FlxG.height - spr.height;
-				spr.x = FlxMath.lerp(spr.x, spr.ID * 370 + 240, 0.4);
+				spr.x = FlxMath.lerp(spr.x, spr.ID * 370 + 240, 0.4 / (ClientPrefs.framerate / 60));
 	
 				if (spr.ID == curSelected)
 				{
-					spr.scale.set(FlxMath.lerp(spr.scale.x, 2, 0.4), FlxMath.lerp(spr.scale.y, 2, 0.07));
-					spr.x = FlxMath.lerp(spr.x, spr.ID * 370, 0.4);
+					spr.scale.set(FlxMath.lerp(spr.scale.x, 2, 0.4 / (ClientPrefs.framerate / 60)), FlxMath.lerp(spr.scale.y, 2, 0.07 / (ClientPrefs.framerate / 60)));
+					spr.x = FlxMath.lerp(spr.x, spr.ID * 370, 0.4 / (ClientPrefs.framerate / 60));
 				}
 	
 				spr.updateHitbox();
 			});
 
-		checker.x -= 0.03;
-		checker.y -= 0.20;
+		checker.x -= 0.03 / (ClientPrefs.framerate / 60);
+		checker.y -= 0.20 / (ClientPrefs.framerate / 60);
 
 		if (!selectedSomethin && selectable)
 		{
@@ -223,7 +223,7 @@ class PlayMenuState extends MusicBeatState
 				if (spr.ID == curSelected)
 				{
 					camFollow.y = spr.getGraphicMidpoint().y;
-					camFollow.x = FlxMath.lerp(camFollow.x, spr.getGraphicMidpoint().x + 43, camLerp);
+					camFollow.x = FlxMath.lerp(camFollow.x, spr.getGraphicMidpoint().x + 43, camLerp / (ClientPrefs.framerate / 60));
 				}
 			});
 

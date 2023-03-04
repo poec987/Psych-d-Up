@@ -260,8 +260,8 @@ class MainMenuState extends MusicBeatState
 		var lerpVal:Float = CoolUtil.boundTo(elapsed * 7.5, 0, 1);
 		camFollowPos.setPosition(FlxMath.lerp(camFollowPos.x, camFollow.x, lerpVal), FlxMath.lerp(camFollowPos.y, camFollow.y, lerpVal));
 
-		checker.x -= 0.45;
-		checker.y -= 0.16;
+		checker.x -= 0.45 / (ClientPrefs.framerate / 60);
+		checker.y -= 0.16 / (ClientPrefs.framerate / 60);
 		
 		if (!selectedSomethin)
 		{
@@ -357,7 +357,7 @@ class MainMenuState extends MusicBeatState
 		{
 			if (spr.ID == curSelected)
 			{
-				camFollow.y = FlxMath.lerp(camFollow.y, spr.getGraphicMidpoint().y, camLerp);
+				camFollow.y = FlxMath.lerp(camFollow.y, spr.getGraphicMidpoint().y, camLerp / (ClientPrefs.framerate / 60));
 				camFollow.x = spr.getGraphicMidpoint().x;
 			}
 		});
