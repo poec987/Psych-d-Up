@@ -291,7 +291,13 @@ class ModifierState extends MusicBeatState
 
 				if (controls.BACK)
 				{
-					FlxG.switchState(new PlayMenuState());	
+					if (FreeplayState.infreeplay != true) {
+						FlxG.switchState(new PlayMenuState());	
+					}
+					else
+					{
+						FlxG.switchState(new FreeplayState());
+					}
 
 					FlxTween.tween(FlxG.camera, { zoom:0.6, alpha:-0.6}, 0.8, { ease: FlxEase.quartInOut});
 					FlxTween.tween(bg, { alpha:0}, 0.8, { ease: FlxEase.quartInOut});

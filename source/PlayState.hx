@@ -389,7 +389,7 @@ class PlayState extends MusicBeatState
 		healthLoss = _modifiers.HPLoss;
 		instakillOnMiss = ClientPrefs.getGameplaySetting('instakill', false);
 		practiceMode =  _modifiers.Practice;
-		cpuControlled = ClientPrefs.getGameplaySetting('botplay', false);
+		cpuControlled = _modifiers.Botplay;
 
 		// var gameCam:FlxCamera = FlxG.camera;
 		camGame = new FlxCamera();

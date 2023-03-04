@@ -36,6 +36,8 @@ class FreeplayState extends MusicBeatState
 	private static var curSelected:Int = 0;
 	var curDifficulty:Int = -1;
 	private static var lastDifficultyName:String = '';
+	
+	public static var infreeplay:Bool = false;
 
 	var scoreBG:FlxSprite;
 	var scoreText:FlxText;
@@ -67,6 +69,7 @@ class FreeplayState extends MusicBeatState
 	
 	override function create()
 	{
+		infreeplay = true;
 		
 		//Paths.clearStoredMemory();
 		//Paths.clearUnusedMemory();
@@ -401,6 +404,7 @@ class FreeplayState extends MusicBeatState
 
 		if (controls.BACK)
 		{
+			infreeplay = false;
 			persistentUpdate = false;
 			if(colorTween != null) {
 				colorTween.cancel();
@@ -422,7 +426,8 @@ class FreeplayState extends MusicBeatState
 		if(ctrl)
 		{
 			persistentUpdate = false;
-			openSubState(new GameplayChangersSubstate());
+			FlxG.switchState(new ModifierState());
+			DiscordClient.changePresence("Time to spice the game.",  null);
 		}
 		else if(space)
 		{
