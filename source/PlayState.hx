@@ -242,6 +242,8 @@ class PlayState extends MusicBeatState
 
 	var phillyGlowGradient:PhillyGlow.PhillyGlowGradient;
 	var phillyGlowParticles:FlxTypedGroup<PhillyGlow.PhillyGlowParticle>;
+	
+	var realSpeed:Float = 0;
 
 	var limoKillingState:Int = 0;
 	var limo:BGSprite;
@@ -274,6 +276,15 @@ class PlayState extends MusicBeatState
 	public var scoreTxt:FlxText;
 	var timeTxt:FlxText;
 	var scoreTxtTween:FlxTween;
+	
+	var lives:Float = 1;
+	var heartSprite:FlxSprite;
+	var offbeatValue:Float = 0;
+	var speedNote:Float = 1;
+	var noteDrunk:Float = 0;
+	var noteAccel:Float = 0;
+	var paparazziInt:Int = 0;
+	var frozen:Bool = false;
 
 	public static var campaignScore:Int = 0;
 	public static var campaignMisses:Int = 0;
@@ -1041,6 +1052,8 @@ class PlayState extends MusicBeatState
 		wiggleShit2.shader.uTime.value = [(strumLine.y - Note.swagWidth * 4) / FlxG.height]; // from 4mbr0s3 2
 		var susWiggle2 = new ShaderFilter(wiggleShit2.shader);
 		camSus.setFilters([susWiggle]); // only enable it for snake notes
+		
+		
 
 		var showTime:Bool = (ClientPrefs.timeBarType != 'Disabled');
 		timeTxt = new FlxText(STRUM_X + (FlxG.width / 2) - 248, 19, 400, "", 32);
@@ -1451,7 +1464,7 @@ class PlayState extends MusicBeatState
 	{
 		if(generatedMusic)
 		{
-			var ratio:Float = value / songSpeed; //funny word huh
+			var ratio:Float = value / (songSpeed + noteAccel); //funny word huh
 			for (note in notes) note.resizeByRatio(ratio);
 			for (note in unspawnNotes) note.resizeByRatio(ratio);
 		}
@@ -2452,6 +2465,8 @@ class PlayState extends MusicBeatState
 			}
 		}
 
+		realSpeed = SONG.speed;
+		
 		for (section in noteData)
 		{
 			for (songNotes in section.sectionNotes)
@@ -3194,7 +3209,7 @@ class PlayState extends MusicBeatState
 					notes.forEachAlive(function(daNote:Note)
 					{
 						var strumGroup:FlxTypedGroup<StrumNote> = playerStrums;
-						if(!daNote.mustPress) strumGroup = opponentStrums;
+						if (!daNote.mustPress) strumGroup = opponentStrums;
 
 						var strumX:Float = strumGroup.members[daNote.noteData].x;
 						var strumY:Float = strumGroup.members[daNote.noteData].y;
@@ -3207,16 +3222,19 @@ class PlayState extends MusicBeatState
 						strumY += daNote.offsetY;
 						strumAngle += daNote.offsetAngle;
 						strumAlpha *= daNote.multAlpha;
-
+						
+						var arrowStrum = strumLineNotes.members[daNote.noteData % 4].y;
+						
+			
 						if (strumScroll) //Downscroll
 						{
 							//daNote.y = (strumY + 0.45 * (Conductor.songPosition - daNote.strumTime) * songSpeed);
-							daNote.distance = (0.45 * (Conductor.songPosition - daNote.strumTime) * songSpeed * daNote.multSpeed);
+							daNote.distance = (0.45 * (Conductor.songPosition - daNote.strumTime) * (songSpeed + noteAccel) * daNote.multSpeed);
 						}
 						else //Upscroll
 						{
 							//daNote.y = (strumY - 0.45 * (Conductor.songPosition - daNote.strumTime) * songSpeed);
-							daNote.distance = (-0.45 * (Conductor.songPosition - daNote.strumTime) * songSpeed * daNote.multSpeed);
+							daNote.distance = (-0.45 * (Conductor.songPosition - daNote.strumTime) * (songSpeed + noteAccel) * daNote.multSpeed);
 						}
 
 						var angleDir = strumDirection * Math.PI / 180;
@@ -3225,8 +3243,11 @@ class PlayState extends MusicBeatState
 
 						if(daNote.copyAlpha)
 							daNote.alpha = strumAlpha;
+							
+						if (_modifiers.AccelNotesSwitch)
+							noteAccel = ((_modifiers.AccelNotes / 100) *  songSpeed) * songPercent;
 
-						if(daNote.copyX)
+						if(daNote.copyX && !_modifiers.SnakeNotesSwitch && !_modifiers.HyperNotesSwitch)
 							daNote.x = strumX + Math.cos(angleDir) * daNote.distance;
 
 						if(daNote.copyY)
@@ -3237,21 +3258,27 @@ class PlayState extends MusicBeatState
 							if(strumScroll && daNote.isSustainNote)
 							{
 								if (daNote.animation.curAnim.name.endsWith('end')) {
-									daNote.y += 10.5 * (fakeCrochet / 400) * 1.5 * songSpeed + (46 * (songSpeed - 1));
-									daNote.y -= 46 * (1 - (fakeCrochet / 600)) * songSpeed;
+									daNote.y += 10.5 * (fakeCrochet / 400) * 1.5 * (songSpeed + noteAccel) + (46 * ((songSpeed + noteAccel) - 1));
+									daNote.y -= 46 * (1 - (fakeCrochet / 600)) * (songSpeed + noteAccel);
 									if(PlayState.isPixelStage) {
 										daNote.y += 8 + (6 - daNote.originalHeightForCalcs) * PlayState.daPixelZoom;
 									} else {
 										daNote.y -= 19;
 									}
 								}
-								daNote.y += (Note.swagWidth / 2) - (60.5 * (songSpeed - 1));
-								daNote.y += 27.5 * ((SONG.bpm / 100) - 1) * (songSpeed - 1);
+								daNote.y += (Note.swagWidth / 2) - (60.5 * ((songSpeed + noteAccel) - 1));
+								daNote.y += 27.5 * (((SONG.bpm / 100) - 1) * ((songSpeed + noteAccel) - 1));
 							}
 						}
 						
 						if (_modifiers.SnakeNotesSwitch && !daNote.isSustainNote)
 							daNote.x += (_modifiers.SnakeNotes * 0.025) * Math.sin(Conductor.songPosition / 300);
+							
+						if (_modifiers.HyperNotesSwitch)
+						{
+							daNote.x += 0.25 * FlxG.random.int(Std.int(_modifiers.HyperNotes * -1), Std.int(_modifiers.HyperNotes));
+							daNote.y += 0.25 * FlxG.random.int(Std.int(_modifiers.HyperNotes * -1), Std.int(_modifiers.HyperNotes));
+						}
 
 						if (!daNote.mustPress && daNote.wasGoodHit && !daNote.hitByOpponent && !daNote.ignoreNote)
 						{
@@ -3274,7 +3301,7 @@ class PlayState extends MusicBeatState
 						{
 							if (strumScroll)
 							{
-								if(daNote.y - daNote.offset.y * daNote.scale.y + daNote.height >= center)
+								if(daNote.y - daNote.offset.y * daNote.scale.y + daNote.height  >= center)
 								{
 									var swagRect = new FlxRect(0, 0, daNote.frameWidth, daNote.frameHeight);
 									swagRect.height = (center - daNote.y) / daNote.scale.y;
@@ -5022,6 +5049,7 @@ class PlayState extends MusicBeatState
 	var lastStepHit:Int = -1;
 	override function stepHit()
 	{
+		
 		super.stepHit();
 		if (Math.abs(FlxG.sound.music.time - (Conductor.songPosition - Conductor.offset)) > (20 * playbackRate)
 			|| (SONG.needsVoices && Math.abs(vocals.time - (Conductor.songPosition - Conductor.offset)) > (20 * playbackRate)))
@@ -5062,6 +5090,8 @@ class PlayState extends MusicBeatState
 
 		iconP1.updateHitbox();
 		iconP2.updateHitbox();
+		
+		realSpeed = SONG.speed;
 
 		if (gf != null && curBeat % Math.round(gfSpeed * gf.danceEveryNumBeats) == 0 && gf.animation.curAnim != null && !gf.animation.curAnim.name.startsWith("sing") && !gf.stunned)
 		{
