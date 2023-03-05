@@ -690,14 +690,17 @@ class TitleState extends MusicBeatState
 				case 8:
 					fnfSpr.x = -1500;
 					fnfSpr.visible = true;
-					FlxTween.quadMotion(fnfSpr, -700, -700, 50
-					+ (textGroup.length * 130), 150
-					+ (textGroup.length * 50), 100
-					+ (textGroup.length * 130),
-					80
-					+ (textGroup.length * 50), 0.4, true, {
-						ease: FlxEase.quadInOut
-					});
+					if (!skippedIntro)
+					{
+						FlxTween.quadMotion(fnfSpr, -700, -700, 50
+						+ (textGroup.length * 130), 150
+						+ (textGroup.length * 50), 100
+						+ (textGroup.length * 130),
+						80
+						+ (textGroup.length * 50), 0.4, true, {
+							ease: FlxEase.quadInOut
+						});
+					}
 				// credTextShit.text += '\nNewgrounds';
 				case 9:
 					deleteCoolText();
