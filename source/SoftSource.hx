@@ -6,6 +6,7 @@ import flixel.tweens.FlxTween;
 import flixel.tweens.FlxEase;
 import flixel.text.FlxText;
 import flixel.group.FlxGroup.FlxTypedGroup;
+import flixel.group.FlxGroup;
 import flixel.math.FlxPoint;
 import flixel.system.FlxSound;
 import flixel.util.FlxTimer;
@@ -78,6 +79,7 @@ class SoftSource
 		interp.variables.set('FlxObject', FlxObject);
 		interp.variables.set('FlxText', FlxText);
 		interp.variables.set('FlxSound', FlxSound);
+		interp.variables.set('FlxGroup', FlxGroup);
 		#if (!flash && sys)
 		interp.variables.set('FlxRuntimeShader', FlxRuntimeShader);
 		#end
@@ -108,6 +110,10 @@ class SoftSource
 				return true;
 			}
 			return false;
+		});
+		interp.variables.set('add', function(object:flixel.FlxBasic)
+		{
+			new FlxGroup().add(object);
 		});
 	}
 
