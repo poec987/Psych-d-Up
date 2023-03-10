@@ -71,6 +71,13 @@ class SoftSource
         interp.variables.set('MusicBeatState', MusicBeatState);
         interp.variables.set('MusicBeatSubstate', MusicBeatSubstate);
         interp.variables.set('CustomState', CustomState);
+		interp.variables.set('FlxTypedGroup', FlxTypedGroup);
+		interp.variables.set('FlxMath', FlxMath);
+		interp.variables.set('FlxSave', FlxSave);
+		interp.variables.set('FlxBasic', FlxMath);
+		interp.variables.set('FlxObject', FlxObject);
+		interp.variables.set('FlxText', FlxText);
+		interp.variables.set('FlxSound', FlxSound);
 		#if (!flash && sys)
 		interp.variables.set('FlxRuntimeShader', FlxRuntimeShader);
 		#end
