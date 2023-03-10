@@ -114,6 +114,8 @@ class MainMenuState extends MusicBeatState
 			optionShit = buttons;
 		}
 
+		SoftSource.runHxFile('images/mainmenu/'+ClientPrefs.menuStyle+'/init');
+
 		#if desktop
 		// Updating Discord Rich Presence
 		DiscordClient.changePresence("In the Menus", null);
@@ -302,6 +304,8 @@ class MainMenuState extends MusicBeatState
 					new FlxTimer().start(0.4, function(tmr:FlxTimer)
 					{
 						var daChoice:String = optionShit[curSelected];
+
+						SoftSource.runHxFile('images/mainmenu/'+ClientPrefs.menuStyle+'/'+daChoice);
 
 						switch (daChoice)
 						{
