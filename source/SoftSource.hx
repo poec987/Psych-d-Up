@@ -46,6 +46,11 @@ class SoftSource
 
 	public var variables(get, never):Map<String, Dynamic>;
 
+	private var controls(get, never):Controls;
+
+	inline function get_controls():Controls
+		return PlayerSettings.player1.controls;
+
 	public function get_variables()
 	{
 		return interp.variables;
@@ -80,6 +85,7 @@ class SoftSource
 		interp.variables.set('FlxText', FlxText);
 		interp.variables.set('FlxSound', FlxSound);
 		interp.variables.set('FlxGroup', FlxGroup);
+		interp.variables.set('controls', controls);
 		#if (!flash && sys)
 		interp.variables.set('FlxRuntimeShader', FlxRuntimeShader);
 		#end
