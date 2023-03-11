@@ -173,6 +173,7 @@ class PlayState extends MusicBeatState
 	public var opponentStrums:FlxTypedGroup<StrumNote>;
 	public var playerStrums:FlxTypedGroup<StrumNote>;
 	public var grpNoteSplashes:FlxTypedGroup<NoteSplash>;
+	public var hearts:FlxTypedGroup<FlxSprite>;
 
 	public var camZooming:Bool = false;
 	public var camZoomingMult:Float = 1;
@@ -427,6 +428,8 @@ class PlayState extends MusicBeatState
 		FlxG.cameras.add(camHUD, false);
 		FlxG.cameras.add(camOther, false);
 		grpNoteSplashes = new FlxTypedGroup<NoteSplash>();
+		
+		modifierValues();
 
 		FlxG.cameras.setDefaultDrawTarget(camGame, true);
 		CustomFadeTransition.nextCamera = camOther;
@@ -1101,6 +1104,13 @@ class PlayState extends MusicBeatState
 		strumLineNotes = new FlxTypedGroup<StrumNote>();
 		add(strumLineNotes);
 		add(grpNoteSplashes);
+		
+		if (_modifiers.InvisibleNotes)
+		{
+			strumLine.visible = false;
+			strumLineNotes.visible = false;
+			grpNoteSplashes.visible = false;
+		}
 
 		if(ClientPrefs.timeBarType == 'Song Name')
 		{
@@ -1195,6 +1205,15 @@ class PlayState extends MusicBeatState
 		add(botplayTxt);
 		if(ClientPrefs.downScroll) {
 			botplayTxt.y = timeBarBG.y - 78;
+		}
+		
+		if (_modifiers.Enigma)
+		{
+			iconP1.visible = false;
+			iconP2.visible = false;
+			healthBar.visible = false;
+			healthBarBG.visible = false;
+			//hearts.visible = false;
 		}
 		
 		LightsOutBG = new FlxSprite(0, 0).loadGraphic(Paths.image('LightsOutBG', 'shared'));
@@ -1704,6 +1723,38 @@ class PlayState extends MusicBeatState
 			} else {
 				startCountdown();
 			}
+		}
+	}
+	
+	function modifierValues():Void
+	{
+		if (_modifiers.LivesSwitch)
+			lives = _modifiers.Lives;
+
+		if (_modifiers.StartHealthSwitch)
+			health = 1 + _modifiers.StartHealth / 100;
+
+		if (_modifiers.HitZonesSwitch)
+		{
+			Conductor.safeZoneOffset = ((Std.int(13 + _modifiers.HitZones)) / 60) * 1000;
+		}
+		else
+		{
+			Conductor.safeZoneOffset = (ClientPrefs.safeFrames / 60) * 1000;
+		}
+
+		if (_modifiers.Mirror)
+		{
+			camGame.flashSprite.scaleX *= -1;
+			camSus.flashSprite.scaleX *= -1;
+			camHUD.flashSprite.scaleX *= -1;
+		}
+
+		if (_modifiers.UpsideDown)
+		{
+			camGame.flashSprite.scaleY *= -1;
+			camSus.flashSprite.scaleY *= -1;
+			camHUD.flashSprite.scaleY *= -1;
 		}
 	}
 
@@ -2396,6 +2447,9 @@ class PlayState extends MusicBeatState
 		FlxG.sound.music.pitch = playbackRate;
 		FlxG.sound.music.onComplete = finishSong.bind();
 		vocals.play();
+		
+		if (_modifiers.OffbeatSwitch)
+			vocals.time = Conductor.songPosition + (512 * _modifiers.Offbeat / 100);
 
 		if(startOnTime > 0)
 		{
@@ -2509,6 +2563,11 @@ class PlayState extends MusicBeatState
 				var daNoteData:Int = Std.int(songNotes[1] % 4);
 
 				var gottaHitNote:Bool = section.mustHitSection;
+				
+				if (_modifiers.OffbeatSwitch)
+				{
+					offbeatValue = 512 * _modifiers.Offbeat / 100;
+				}
 
 				if (songNotes[1] > 3)
 				{
@@ -2907,11 +2966,16 @@ class PlayState extends MusicBeatState
 		FlxG.sound.music.play();
 		FlxG.sound.music.pitch = playbackRate;
 		Conductor.songPosition = FlxG.sound.music.time;
-		if (Conductor.songPosition <= vocals.length)
+		if (_modifiers.OffbeatSwitch)
 		{
-			vocals.time = Conductor.songPosition;
-			vocals.pitch = playbackRate;
+			vocals.time = Conductor.songPosition + (512 * _modifiers.Offbeat / 100);
 		}
+		else
+			if (Conductor.songPosition <= vocals.length)
+			{
+				vocals.time = Conductor.songPosition;
+				vocals.pitch = playbackRate;
+			}
 		vocals.play();
 	}
 
@@ -4713,6 +4777,8 @@ class PlayState extends MusicBeatState
 				char.holdTimer = 0;
 			}
 		}
+		if (_modifiers.MustDieSwitch)
+			health -= _modifiers.MustDie / 7000;
 
 		if (SONG.needsVoices)
 			vocals.volume = 1;
