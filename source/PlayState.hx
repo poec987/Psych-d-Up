@@ -264,6 +264,10 @@ class PlayState extends MusicBeatState
 	var bgGirls:BackgroundGirls;
 	var wiggleShit:WiggleEffect = new WiggleEffect();
 	var bgGhouls:BGSprite;
+	
+	public var LightsOutBG:FlxSprite;
+	public var BlindingBG:FlxSprite;
+	public var freezeIndicator:FlxSprite;
 
 	var tankWatchtower:BGSprite;
 	var tankGround:BGSprite;
@@ -561,6 +565,8 @@ class PlayState extends MusicBeatState
 			case 'spooky': //Week 2
 				if(!ClientPrefs.lowQuality) {
 					halloweenBG = new BGSprite('halloween_bg', -200, -100, ['halloweem bg0', 'halloweem bg lightning strike']);
+					if (_modifiers.BrightnessSwitch && _modifiers.Brightness <= -45)
+							halloweenBG = new BGSprite('halloween_LObg', -200, -100, ['halloweem bg0', 'halloweem bg lightning strike']);
 				} else {
 					halloweenBG = new BGSprite('halloween_bg_low', -200, -100);
 				}
@@ -1190,6 +1196,32 @@ class PlayState extends MusicBeatState
 		if(ClientPrefs.downScroll) {
 			botplayTxt.y = timeBarBG.y - 78;
 		}
+		
+		LightsOutBG = new FlxSprite(0, 0).loadGraphic(Paths.image('LightsOutBG', 'shared'));
+		add(LightsOutBG);
+		switch (curStage)
+		{
+			case 'school' | 'schoolEvil':
+				LightsOutBG.loadGraphic(Paths.image('pixelUI/LightsOutBG-pixel', 'week6'));
+		}
+
+		BlindingBG = new FlxSprite(0, 0).loadGraphic(Paths.image('BlindingBG', 'shared'));
+		add(BlindingBG);
+		switch (curStage)
+		{
+			case 'school' | 'schoolEvil':
+				BlindingBG.loadGraphic(Paths.image('pixelUI/BlindingBG-pixel', 'week6'));
+		}
+		if (_modifiers.BrightnessSwitch)
+		{
+			LightsOutBG.alpha = _modifiers.Brightness / 100 * -1;
+			BlindingBG.alpha = _modifiers.Brightness / 100;
+		}
+		else
+		{
+			LightsOutBG.alpha = 0;
+			BlindingBG.alpha = 0;
+		}
 
 		strumLineNotes.cameras = [camHUD];
 		grpNoteSplashes.cameras = [camHUD];
@@ -1204,6 +1236,8 @@ class PlayState extends MusicBeatState
 		timeBarBG.cameras = [camHUD];
 		timeTxt.cameras = [camHUD];
 		doof.cameras = [camHUD];
+		LightsOutBG.cameras = [camHUD];
+		BlindingBG.cameras = [camHUD];
 
 		// if (SONG.song == 'South')
 		// FlxG.camera.alpha = 0.7;
