@@ -127,6 +127,11 @@ class SoftSource
 			return CustomState.instance.add(object);
 		});
 
+		interp.variables.set('runHxFile', function(key:String)
+		{
+			runHxFile(key);
+		});
+
 		interp.variables.set('loadGraphic', function(asset:String)
 		{
 			return new FlxSprite().loadGraphic(Paths.image(asset));
