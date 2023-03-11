@@ -119,7 +119,19 @@ class SoftSource
 		});
 		interp.variables.set('add', function(object:flixel.FlxBasic)
 		{
-			new FlxGroup().add(object);
+			return new FlxGroup().add(object);
+		});
+
+		interp.variables.set('loadGraphic', function(asset:String)
+		{
+			return new FlxSprite().loadGraphic(Paths.image(asset));
+		});
+
+		interp.variables.set('importLib', function(libName:String, ?libPackage:String = '') {
+			var str:String = '';
+			if(libPackage.length > 0)
+				str = libPackage + '.';
+			interp.variables.set(libName, Type.resolveClass(str + libName));
 		});
 	}
 
@@ -157,9 +169,9 @@ class CustomState extends MusicBeatState
 	}
 
     override function create() {
+		super.create();
 		instance = this;
 		SoftSource.runHxFile('states/'+targetstate+'/create');
-		super.create();
 	}
 	override function update(elapsed:Float) {
 		SoftSource.runHxFile('states/'+targetstate+'/update');
