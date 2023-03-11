@@ -11,6 +11,7 @@ import flixel.math.FlxPoint;
 import flixel.system.FlxSound;
 import flixel.util.FlxTimer;
 import flixel.FlxSprite;
+import flixel.FlxState;
 import flixel.FlxCamera;
 import flixel.util.FlxColor;
 import flixel.FlxBasic;
@@ -85,7 +86,7 @@ class SoftSource
 		interp.variables.set('FlxText', FlxText);
 		interp.variables.set('FlxSound', FlxSound);
 		interp.variables.set('FlxGroup', FlxGroup);
-		interp.variables.set('FlxColor', FlxColor);
+		interp.variables.set('FlxState', FlxState);
 		interp.variables.set('controls', controls);
 		#if (!flash && sys)
 		interp.variables.set('FlxRuntimeShader', FlxRuntimeShader);
@@ -118,9 +119,12 @@ class SoftSource
 			}
 			return false;
 		});
+
+		// Other Functions
+
 		interp.variables.set('add', function(object:flixel.FlxBasic)
 		{
-			return new FlxGroup().add(object);
+			return CustomState.instance.add(object);
 		});
 
 		interp.variables.set('loadGraphic', function(asset:String)
@@ -133,6 +137,23 @@ class SoftSource
 			if(libPackage.length > 0)
 				str = libPackage + '.';
 			interp.variables.set(libName, Type.resolveClass(str + libName));
+		});
+
+		interp.variables.set('colorHex', function(hex:Int)
+		{
+			return FlxColor.fromInt(hex);
+		});
+		interp.variables.set('alignText', function(dir:String) {
+			switch (dir)
+			{
+				case 'LEFT':
+					return FlxTextAlign.LEFT;
+				case 'CENTER':
+					return FlxTextAlign.CENTER;
+				case 'RIGHT':
+					return FlxTextAlign.RIGHT;
+			}
+			return FlxTextAlign.LEFT;
 		});
 	}
 
@@ -170,9 +191,9 @@ class CustomState extends MusicBeatState
 	}
 
     override function create() {
-		super.create();
 		instance = this;
 		SoftSource.runHxFile('states/'+targetstate+'/create');
+		super.create();
 	}
 	override function update(elapsed:Float) {
 		SoftSource.runHxFile('states/'+targetstate+'/update');
