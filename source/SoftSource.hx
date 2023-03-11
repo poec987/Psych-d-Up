@@ -85,6 +85,7 @@ class SoftSource
 		interp.variables.set('FlxText', FlxText);
 		interp.variables.set('FlxSound', FlxSound);
 		interp.variables.set('FlxGroup', FlxGroup);
+		interp.variables.set('FlxColor', FlxColor);
 		interp.variables.set('controls', controls);
 		#if (!flash && sys)
 		interp.variables.set('FlxRuntimeShader', FlxRuntimeShader);
