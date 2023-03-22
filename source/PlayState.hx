@@ -1177,13 +1177,13 @@ class PlayState extends MusicBeatState
 		add(healthBar);
 		healthBarBG.sprTracker = healthBar;
 
-		iconP1 = new HealthIcon(boyfriend.healthIcon, true);
+		iconP1 = new HealthIcon(boyfriend.healthIcon, true, boyfriend.fiveicons);
 		iconP1.y = healthBar.y - 75;
 		iconP1.visible = !ClientPrefs.hideHud;
 		iconP1.alpha = ClientPrefs.healthBarAlpha;
 		add(iconP1);
 
-		iconP2 = new HealthIcon(dad.healthIcon, false);
+		iconP2 = new HealthIcon(dad.healthIcon, false, dad.fiveicons);
 		iconP2.y = healthBar.y - 75;
 		iconP2.visible = !ClientPrefs.hideHud;
 		iconP2.alpha = ClientPrefs.healthBarAlpha;
@@ -3189,19 +3189,50 @@ class PlayState extends MusicBeatState
 		if (health > 2)
 			health = 2;
 
-		if (healthBar.percent < 20)
-			iconP1.animation.curAnim.curFrame = 1;
-		if (healthBar.percent > 20)
-			iconP1.animation.curAnim.curFrame = 0;
-		if (healthBar.percent > 80)
-			iconP1.animation.curAnim.curFrame = 2;
-		
-		if (healthBar.percent < 20)
-			iconP2.animation.curAnim.curFrame = 2;
-		if (healthBar.percent > 20)
-			iconP2.animation.curAnim.curFrame = 0;
-		if (healthBar.percent > 80)
-			iconP2.animation.curAnim.curFrame = 1;
+		if (!boyfriend.fiveicons)
+		{
+			if (healthBar.percent < 20)
+				iconP1.animation.curAnim.curFrame = 1;
+			if (healthBar.percent > 20)
+				iconP1.animation.curAnim.curFrame = 0;
+			if (healthBar.percent > 80)
+				iconP1.animation.curAnim.curFrame = 2;
+		}
+		else
+		{
+			if (healthBar.percent < 20)
+				iconP1.animation.curAnim.curFrame = 0;
+			if (healthBar.percent < 40 && healthBar.percent > 20)
+				iconP1.animation.curAnim.curFrame = 1;
+			if (healthBar.percent > 40 && healthBar.percent < 60)
+				iconP1.animation.curAnim.curFrame = 2;
+			if (healthBar.percent > 60 && healthBar.percent < 80)
+				iconP1.animation.curAnim.curFrame = 3;
+			if (healthBar.percent > 80)
+				iconP1.animation.curAnim.curFrame = 4;
+		}
+		if (!dad.fiveicons)
+		{
+			if (healthBar.percent < 20)
+				iconP2.animation.curAnim.curFrame = 2;
+			if (healthBar.percent > 20)
+				iconP2.animation.curAnim.curFrame = 0;
+			if (healthBar.percent > 80)
+				iconP2.animation.curAnim.curFrame = 1;
+		}
+		else
+		{
+			if (healthBar.percent < 20)
+				iconP2.animation.curAnim.curFrame = 4;
+			if (healthBar.percent < 40)
+				iconP2.animation.curAnim.curFrame = 3;
+			if (healthBar.percent > 40)
+				iconP2.animation.curAnim.curFrame = 2;
+			if (healthBar.percent > 60)
+				iconP2.animation.curAnim.curFrame = 1;
+			if (healthBar.percent > 80)
+				iconP2.animation.curAnim.curFrame = 0;
+		}
 
 		if (FlxG.keys.anyJustPressed(debugKeysCharacter) && !endingSong && !inCutscene) {
 			persistentUpdate = false;
@@ -3879,7 +3910,7 @@ class PlayState extends MusicBeatState
 							boyfriend.alpha = 0.00001;
 							boyfriend = boyfriendMap.get(value2);
 							boyfriend.alpha = lastAlpha;
-							iconP1.changeIcon(boyfriend.healthIcon);
+							iconP1.changeIcon(boyfriend.healthIcon, boyfriend.fiveicons);
 						}
 						setOnLuas('boyfriendName', boyfriend.curCharacter);
 
@@ -3901,7 +3932,7 @@ class PlayState extends MusicBeatState
 								gf.visible = false;
 							}
 							dad.alpha = lastAlpha;
-							iconP2.changeIcon(dad.healthIcon);
+							iconP2.changeIcon(dad.healthIcon, dad.fiveicons);
 						}
 						setOnLuas('dadName', dad.curCharacter);
 

@@ -63,7 +63,7 @@ class FreeplayState extends MusicBeatState
 	var colorTween:FlxTween;
 
 	var disc:FlxSprite = new FlxSprite(-200, 730);
-	var discIcon:HealthIcon = new HealthIcon("bf");
+	var discIcon:HealthIcon = new HealthIcon("bf", false, false);
 	
 	var sprDifficulty:FlxSprite;
 	
@@ -171,7 +171,7 @@ class FreeplayState extends MusicBeatState
 			songText.snapToPosition();
 
 			Paths.currentModDirectory = songs[i].folder;
-			var icon:HealthIcon = new HealthIcon(songs[i].songCharacter);
+			var icon:HealthIcon = new HealthIcon(songs[i].songCharacter, false, false);
 			icon.sprTracker = songText;
 
 			// using a FlxGroup is too much fuss!
@@ -666,7 +666,7 @@ class FreeplayState extends MusicBeatState
 		disc.animation.play(songs[curSelected].songCharacter);
 
 		remove(discIcon);
-		discIcon = new HealthIcon(songs[curSelected].songCharacter);
+		discIcon = new HealthIcon(songs[curSelected].songCharacter, false, false);
 		add(discIcon);
 		discIcon.animation.play(songs[curSelected].songCharacter);
 	}
