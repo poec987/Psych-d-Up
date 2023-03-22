@@ -2,24 +2,26 @@
 <TextureAtlas imagePath="Freeplay_Discs.png">
 	<!-- Created with Adobe Animate version 21.0.6.41649 -->
 	<!-- http://www.adobe.com/products/animate.html -->
-	<SubTexture name="dad0000" x="0" y="0" width="309" height="310"/>
-	<SubTexture name="dad0001" x="312" y="0" width="309" height="310"/>
-	<SubTexture name="gf0000" x="624" y="0" width="309" height="310"/>
-	<SubTexture name="gf0001" x="936" y="0" width="309" height="310"/>
-	<SubTexture name="mom0000" x="0" y="313" width="309" height="310"/>
-	<SubTexture name="mom0001" x="312" y="313" width="309" height="310"/>
-	<SubTexture name="monster0000" x="624" y="313" width="309" height="310"/>
-	<SubTexture name="monster0001" x="936" y="313" width="309" height="310"/>
-	<SubTexture name="parents0000" x="0" y="626" width="309" height="310"/>
-	<SubTexture name="parents0001" x="312" y="626" width="309" height="310"/>
-	<SubTexture name="pico0000" x="624" y="626" width="309" height="310"/>
-	<SubTexture name="pico0001" x="936" y="626" width="309" height="310"/>
-	<SubTexture name="senpai-pixel0000" x="0" y="939" width="309" height="310"/>
-	<SubTexture name="senpai-pixel0001" x="312" y="939" width="309" height="310"/>
-	<SubTexture name="spirit-pixel0000" x="624" y="939" width="309" height="310"/>
-	<SubTexture name="spirit-pixel0001" x="936" y="939" width="309" height="310"/>
-	<SubTexture name="spooky0000" x="0" y="1252" width="309" height="310"/>
-	<SubTexture name="spooky0001" x="312" y="1252" width="309" height="310"/>
-	<SubTexture name="tankman0000" x="624" y="1252" width="309" height="310"/>
-	<SubTexture name="tankman0001" x="936" y="1252" width="309" height="310"/>
+	<SubTexture name="angrysenpai-pixel0000" x="0" y="0" width="309" height="310"/>
+	<SubTexture name="angrysenpai-pixel0001" x="312" y="0" width="309" height="310"/>
+	<SubTexture name="dad0000" x="624" y="0" width="309" height="310"/>
+	<SubTexture name="dad0001" x="936" y="0" width="309" height="310"/>
+	<SubTexture name="gf0000" x="0" y="313" width="309" height="310"/>
+	<SubTexture name="gf0001" x="312" y="313" width="309" height="310"/>
+	<SubTexture name="mom0000" x="624" y="313" width="309" height="310"/>
+	<SubTexture name="mom0001" x="936" y="313" width="309" height="310"/>
+	<SubTexture name="monster0000" x="0" y="626" width="309" height="310"/>
+	<SubTexture name="monster0001" x="312" y="626" width="309" height="310"/>
+	<SubTexture name="parents0000" x="624" y="626" width="309" height="310"/>
+	<SubTexture name="parents0001" x="936" y="626" width="309" height="310"/>
+	<SubTexture name="pico0000" x="0" y="939" width="309" height="310"/>
+	<SubTexture name="pico0001" x="312" y="939" width="309" height="310"/>
+	<SubTexture name="senpai-pixel0000" x="624" y="939" width="309" height="310"/>
+	<SubTexture name="senpai-pixel0001" x="936" y="939" width="309" height="310"/>
+	<SubTexture name="spirit-pixel0000" x="0" y="1252" width="309" height="310"/>
+	<SubTexture name="spirit-pixel0001" x="312" y="1252" width="309" height="310"/>
+	<SubTexture name="spooky0000" x="624" y="1252" width="309" height="310"/>
+	<SubTexture name="spooky0001" x="936" y="1252" width="309" height="310"/>
+	<SubTexture name="tankman0000" x="0" y="1565" width="309" height="310"/>
+	<SubTexture name="tankman0001" x="312" y="1565" width="309" height="310"/>
 </TextureAtlas>

@@ -391,6 +391,7 @@ class CharacterEditorState extends MusicBeatState
 				}
 			],
 			"no_antialiasing": false,
+			"fiveicons": false,
 			"image": "characters/DADDY_DEAREST",
 			"position": [
 				0,
@@ -467,6 +468,7 @@ class CharacterEditorState extends MusicBeatState
 				character.imageFile = parsedJson.image;
 				character.jsonScale = parsedJson.scale;
 				character.noAntialiasing = parsedJson.no_antialiasing;
+				character.fiveicons = parsedJson.fiveicons;
 				character.originalFlipX = parsedJson.flip_x;
 				character.healthIcon = parsedJson.healthicon;
 				character.healthColorArray = parsedJson.healthbar_colors;
@@ -504,6 +506,7 @@ class CharacterEditorState extends MusicBeatState
 
 	var flipXCheckBox:FlxUICheckBox;
 	var noAntialiasingCheckBox:FlxUICheckBox;
+	var fiveiconsCheckBox:FlxUICheckBox;
 
 	var healthColorStepperR:FlxUINumericStepper;
 	var healthColorStepperG:FlxUINumericStepper;
@@ -561,6 +564,11 @@ class CharacterEditorState extends MusicBeatState
 			char.noAntialiasing = noAntialiasingCheckBox.checked;
 			ghostChar.antialiasing = char.antialiasing;
 		};
+		fiveiconsCheckBox = new FlxUICheckBox(flipXCheckBox.x, flipXCheckBox.y + 20, null, null, "Five Icons", 80);
+		fiveiconsCheckBox.checked = char.fiveicons;
+		fiveiconsCheckBox.callback = function() {
+			char.fiveicons = fiveiconsCheckBox.checked;
+		};
 
 		positionXStepper = new FlxUINumericStepper(flipXCheckBox.x + 110, flipXCheckBox.y, 10, char.positionArray[0], -9000, 9000, 0);
 		positionYStepper = new FlxUINumericStepper(positionXStepper.x + 60, positionXStepper.y, 10, char.positionArray[1], -9000, 9000, 0);
@@ -591,6 +599,7 @@ class CharacterEditorState extends MusicBeatState
 		tab_group.add(scaleStepper);
 		tab_group.add(flipXCheckBox);
 		tab_group.add(noAntialiasingCheckBox);
+		tab_group.add(fiveiconsCheckBox);
 		tab_group.add(positionXStepper);
 		tab_group.add(positionYStepper);
 		tab_group.add(positionCameraXStepper);
@@ -986,6 +995,7 @@ class CharacterEditorState extends MusicBeatState
 			scaleStepper.value = char.jsonScale;
 			flipXCheckBox.checked = char.originalFlipX;
 			noAntialiasingCheckBox.checked = char.noAntialiasing;
+			fiveiconsCheckBox.checked = char.fiveicons;
 			resetHealthBarColor();
 			leHealthIcon.changeIcon(healthIconInputText.text);
 			positionXStepper.value = char.positionArray[0];
@@ -1284,6 +1294,7 @@ class CharacterEditorState extends MusicBeatState
 
 			"flip_x": char.originalFlipX,
 			"no_antialiasing": char.noAntialiasing,
+			"fiveicons": char.fiveicons,
 			"healthbar_colors": char.healthColorArray
 		};
 
