@@ -144,6 +144,14 @@ class SoftSource
 			interp.variables.set(libName, Type.resolveClass(str + libName));
 		});
 
+		interp.variables.set('newAlphabetGroup', function() {
+			return new FlxTypedGroup<Alphabet>();
+		});
+
+		interp.variables.set('addAlphabetGroup', function(grp:FlxTypedGroup<Alphabet>, obj:Alphabet) {
+			return grp.add(obj);
+		});
+
 		interp.variables.set('colorHex', function(hex:Int)
 		{
 			return FlxColor.fromInt(hex);
