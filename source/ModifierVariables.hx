@@ -72,6 +72,7 @@ typedef ModiVariables =
     var Paparazzi:Float;
     var JacktasticSwitch:Bool;
     var Jacktastic:Float;
+	var OpponentPlay:Bool;
 }
 
 class ModifierVariables
@@ -184,7 +185,9 @@ class ModifierVariables
             FreezeSwitch: ModifierState.modifierList[37].value,
 
             Paparazzi: ModifierState.modifierList[38].curValue,
-            PaparazziSwitch: ModifierState.modifierList[38].value
+            PaparazziSwitch: ModifierState.modifierList[38].value,
+			
+			OpponentPlay: ModifierState.modifierList[39].value
         };
     }
 
@@ -327,6 +330,8 @@ class ModifierVariables
 
         ModifierState.modifierList[38].curValue = _modifiers.Paparazzi;
         ModifierState.modifierList[38].value = _modifiers.PaparazziSwitch;
+		
+		ModifierState.modifierList[39].value = _modifiers.OpponentPlay;
     }
 
     public static function nullify():Void
@@ -382,7 +387,8 @@ class ModifierVariables
             {name: 'Boyfriend Must Die', value: false, conflicts: [0,1,2,3,4,5,6], multi: 0.006, realmulti: 0, equation: '', abs: false,  revAtLow: false, type: 'number', minValue: 0, maxValue: 500, curValue: 0, offAt: 0, addChange: 5, string: "%\nASS\nWHOOPIN'", explanation: "How much ass whoopin do you want? Change how much enemies should damage Boyfriend per note. Adds 0.03 to the score rate. Can be changed numerically. WARNING: CAN BLUE BALL YOU IF YOU SET IT TOO HIGH."},
             {name: 'Stagefright', value: false, conflicts: [2,3,4,5,6], multi: 0.05, realmulti: 0, equation: '', abs: false,  revAtLow: false, type: 'number', minValue: 0, maxValue: 30, curValue: 0, offAt: 0, addChange: 1, string: '\nLESS\nMISSES', explanation: "Intimidation makes you afraid. Set how many misses you need to have until you freeze. YOU ARE GIVEN 30 MISSES BY 1 LESS MISS. The higher, the less misses you need. Adds 0.05 to the multiplier with each amount. Can be changed numerically."},
             {name: 'Paparazzi', value: false, conflicts: [], multi: 0.004, realmulti: 0, equation: '', abs: false,  revAtLow: false, type: 'number', minValue: 0, maxValue: 100, curValue: 0, offAt: 0, addChange: 1, string: '\nCAMERAMA(E)N', explanation: "Oh how popular you are! Change how many cameramen you want on the scene taking pictures. Adds 0.004 to the score rate. Can be changed numerically."},
-        ];
+			{name: 'Play Opponent Side', value: false, conflicts: [], multi: 0.2, realmulti: 0, equation: '', abs: false,  revAtLow: false, type: 'switch', minValue: 0, maxValue: 0, curValue: 0, offAt: 0, addChange: 0, string: '\nOPPONENT PLAY', explanation: "Play as the opponent idk I'm not good at these descriptions."}
+		];
 
         updateModifiers();
     }

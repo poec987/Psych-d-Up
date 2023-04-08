@@ -9,6 +9,7 @@ import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxSort;
 import Section.SwagSection;
+import ModifierVariables._modifiers;
 #if MODS_ALLOWED
 import sys.io.File;
 import sys.FileSystem;
@@ -218,6 +219,10 @@ class Character extends FlxSprite
 					quickAnimAdd('idle', 'BF idle dance');
 				}
 				//trace('Loaded file to character ' + curCharacter);
+		}
+		if (_modifiers.OpponentPlay)
+		{
+			flipX = !flipX;
 		}
 		originalFlipX = flipX;
 

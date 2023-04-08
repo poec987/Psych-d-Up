@@ -207,6 +207,7 @@ class PlayState extends MusicBeatState
 	public var camSus:FlxCamera; // sussy!!1!11
 
 	//Gameplay settings
+	public var foePlay:Bool = false;
 	public var healthGain:Float = 1;
 	public var healthLoss:Float = 1;
 	public var instakillOnMiss:Bool = false;
@@ -405,6 +406,7 @@ class PlayState extends MusicBeatState
 			FlxG.sound.music.stop();
 
 		// Gameplay settings
+		foePlay = _modifiers.OpponentPlay;
 		healthGain = _modifiers.HPGain;
 		healthLoss = _modifiers.HPLoss;
 		instakillOnMiss = ClientPrefs.getGameplaySetting('instakill', false);
@@ -511,12 +513,12 @@ class PlayState extends MusicBeatState
 
 		defaultCamZoom = stageData.defaultZoom;
 		isPixelStage = stageData.isPixelStage;
-		BF_X = stageData.boyfriend[0];
-		BF_Y = stageData.boyfriend[1];
+		BF_X = foePlay ? stageData.opponent[0] : stageData.boyfriend[0];
+		BF_Y = foePlay ? stageData.opponent[1] : stageData.boyfriend[1];
+		DAD_X = foePlay ? stageData.boyfriend[0] : stageData.opponent[0];
+		DAD_Y = foePlay ? stageData.boyfriend[1] : stageData.opponent[1];
 		GF_X = stageData.girlfriend[0];
 		GF_Y = stageData.girlfriend[1];
-		DAD_X = stageData.opponent[0];
-		DAD_Y = stageData.opponent[1];
 
 		if(stageData.camera_speed != null)
 			cameraSpeed = stageData.camera_speed;
@@ -876,13 +878,14 @@ class PlayState extends MusicBeatState
 		}
 
 		add(gfGroup); //Needed for blammed lights
+		
 
 		// Shitty layering but whatev it works LOL
 		if (curStage == 'limo')
 			add(limo);
 
-		add(dadGroup);
-		add(boyfriendGroup);
+		add(foePlay ? boyfriendGroup : dadGroup);
+		add(foePlay ? dadGroup : boyfriendGroup);
 
 		switch(curStage)
 		{
@@ -988,15 +991,26 @@ class PlayState extends MusicBeatState
 			}
 		}
 
-		dad = new Character(0, 0, SONG.player2);
-		startCharacterPos(dad, true);
-		dadGroup.add(dad);
-		startCharacterLua(dad.curCharacter);
+		if (!foePlay)
+		{
+			dad = new Character(0, 0, SONG.player2);
+			boyfriend = new Boyfriend(0, 0, SONG.player1);
 
-		boyfriend = new Boyfriend(0, 0, SONG.player1);
-		startCharacterPos(boyfriend);
-		boyfriendGroup.add(boyfriend);
-		startCharacterLua(boyfriend.curCharacter);
+			startCharacterPos(boyfriend, false);
+			startCharacterPos(dad, true);
+			dadGroup.add(dad);
+			boyfriendGroup.add(boyfriend);
+		}
+		else
+		{
+			dad = new Character(0, 0, SONG.player1);
+			boyfriend = new Boyfriend(0, 0, SONG.player2);
+
+			startCharacterPos(boyfriend, true);
+			startCharacterPos(dad, false);
+			boyfriendGroup.add(boyfriend);
+			dadGroup.add(dad);
+		}
 
 		var camPos:FlxPoint = new FlxPoint(girlfriendCameraOffset[0], girlfriendCameraOffset[1]);
 		if(gf != null)
@@ -1005,9 +1019,16 @@ class PlayState extends MusicBeatState
 			camPos.y += gf.getGraphicMidpoint().y + gf.cameraPosition[1];
 		}
 
-		if(dad.curCharacter.startsWith('gf')) {
+		if (dad.curCharacter.startsWith('gf') && !foePlay)
+		{
 			dad.setPosition(GF_X, GF_Y);
-			if(gf != null)
+			if (gf != null)
+				gf.visible = false;
+		}
+		else if (boyfriend.curCharacter.startsWith('gf') && foePlay)
+		{
+			boyfriend.setPosition(GF_X, GF_Y);
+			if (gf != null)
 				gf.visible = false;
 		}
 
@@ -1169,7 +1190,7 @@ class PlayState extends MusicBeatState
 		healthBarBG.yAdd = -12;
 		if(ClientPrefs.downScroll) healthBarBG.y = 0.11 * FlxG.height;
 
-		healthBar = new FlxBar(healthBarBG.x + 4, healthBarBG.y + 4, RIGHT_TO_LEFT, Std.int(healthBarBG.width - 50),
+		healthBar = new FlxBar(healthBarBG.x + 4, healthBarBG.y + 4, foePlay ? LEFT_TO_RIGHT : RIGHT_TO_LEFT, Std.int(healthBarBG.width - 50),
 			Std.int(healthBarBG.height - 28), this, 'health', 0, 2);
 		healthBar.scrollFactor.set();
 		// healthBar
@@ -1192,6 +1213,12 @@ class PlayState extends MusicBeatState
 		iconP2.alpha = ClientPrefs.healthBarAlpha;
 		add(iconP2);
 		reloadHealthBarColors();
+		
+		if (foePlay)
+		{
+			iconP1.flipX = true;
+			iconP2.flipX = true;
+		}
 
 		scoreTxt = new FlxText(0, healthBarBG.y + 36, FlxG.width, "", 20);
 		scoreTxt.setFormat(Paths.font("vcr.ttf"), 20, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
@@ -1569,7 +1596,8 @@ class PlayState extends MusicBeatState
 	public function addCharacterToList(newCharacter:String, type:Int) {
 		switch(type) {
 			case 0:
-				if(!boyfriendMap.exists(newCharacter)) {
+				if (!boyfriendMap.exists(newCharacter) && !foePlay)
+				{
 					var newBoyfriend:Boyfriend = new Boyfriend(0, 0, newCharacter);
 					boyfriendMap.set(newCharacter, newBoyfriend);
 					boyfriendGroup.add(newBoyfriend);
@@ -1577,9 +1605,8 @@ class PlayState extends MusicBeatState
 					newBoyfriend.alpha = 0.00001;
 					startCharacterLua(newBoyfriend.curCharacter);
 				}
-
-			case 1:
-				if(!dadMap.exists(newCharacter)) {
+				if (!dadMap.exists(newCharacter) && foePlay)
+				{
 					var newDad:Character = new Character(0, 0, newCharacter);
 					dadMap.set(newCharacter, newDad);
 					dadGroup.add(newDad);
@@ -1587,9 +1614,28 @@ class PlayState extends MusicBeatState
 					newDad.alpha = 0.00001;
 					startCharacterLua(newDad.curCharacter);
 				}
-
+			case 1:
+				if (!dadMap.exists(newCharacter) && !foePlay)
+				{
+					var newDad:Character = new Character(0, 0, newCharacter);
+					dadMap.set(newCharacter, newDad);
+					dadGroup.add(newDad);
+					startCharacterPos(newDad, true);
+					newDad.alpha = 0.00001;
+					startCharacterLua(newDad.curCharacter);
+				}
+				if (!boyfriendMap.exists(newCharacter) && foePlay)
+				{
+					var newBoyfriend:Boyfriend = new Boyfriend(0, 0, newCharacter);
+					boyfriendMap.set(newCharacter, newBoyfriend);
+					boyfriendGroup.add(newBoyfriend);
+					startCharacterPos(newBoyfriend);
+					newBoyfriend.alpha = 0.00001;
+					startCharacterLua(newBoyfriend.curCharacter);
+				}
 			case 2:
-				if(gf != null && !gfMap.exists(newCharacter)) {
+				if (gf != null && !gfMap.exists(newCharacter))
+				{
 					var newGf:Character = new Character(0, 0, newCharacter);
 					newGf.scrollFactor.set(0.95, 0.95);
 					gfMap.set(newCharacter, newGf);
@@ -2182,6 +2228,15 @@ class PlayState extends MusicBeatState
 			generateStaticArrows(0);
 			generateStaticArrows(1);
 			for (i in 0...playerStrums.length) {
+				if (foePlay && !ClientPrefs.middleScroll)
+				{
+					var tempPosX = opponentStrums.members[i].x;
+					var tempPosY = opponentStrums.members[i].y;
+					opponentStrums.members[i].x = playerStrums.members[i].x;
+					opponentStrums.members[i].y = playerStrums.members[i].y;
+					playerStrums.members[i].x = tempPosX;
+					playerStrums.members[i].y = tempPosY;
+				}
 				setOnLuas('defaultPlayerStrumX' + i, playerStrums.members[i].x);
 				setOnLuas('defaultPlayerStrumY' + i, playerStrums.members[i].y);
 			}
@@ -2576,6 +2631,9 @@ class PlayState extends MusicBeatState
 				{
 					gottaHitNote = !section.mustHitSection;
 				}
+				
+				if (foePlay)
+					gottaHitNote = !gottaHitNote;
 
 				var oldNote:Note;
 				if (unspawnNotes.length > 0)
@@ -2702,12 +2760,12 @@ class PlayState extends MusicBeatState
 	function eventPushed(event:EventNote) {
 		switch(event.event) {
 			case 'Change Character':
-				var charType:Int = 0;
+				var charType:Int = foePlay ? 1 : 0;
 				switch(event.value1.toLowerCase()) {
 					case 'gf' | 'girlfriend' | '1':
 						charType = 2;
 					case 'dad' | 'opponent' | '0':
-						charType = 1;
+						charType = foePlay ? 0 : 1;
 					default:
 						charType = Std.parseInt(event.value1);
 						if(Math.isNaN(charType)) charType = 0;
@@ -2863,6 +2921,12 @@ class PlayState extends MusicBeatState
 			if(carTimer != null) carTimer.active = false;
 
 			var chars:Array<Character> = [boyfriend, gf, dad];
+			
+			if (foePlay)
+				chars = [dad, gf, boyfriend];
+			else
+				chars = [boyfriend, gf, dad];
+			
 			for (char in chars) {
 				if(char != null && char.colorTween != null) {
 					char.colorTween.active = false;
@@ -3186,8 +3250,30 @@ class PlayState extends MusicBeatState
 
 		var iconOffset:Int = 26;
 
-		iconP1.x = healthBar.x + (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01)) + (150 * iconP1.scale.x - 150) / 2 - iconOffset;
-		iconP2.x = healthBar.x + (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01)) - (150 * iconP2.scale.x) / 2 - iconOffset * 2;
+		if (!foePlay)
+		{
+			iconP1.x = healthBar.x
+				+ (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01))
+				+ (150 * iconP1.scale.x - 150) / 2
+				- iconOffset;
+			iconP2.x = healthBar.x
+				+ (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01))
+				- (150 * iconP2.scale.x) / 2
+				- iconOffset * 2;
+		}
+		else
+		{
+			iconP2.x = healthBar.x
+				- (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 100, 0, 0, 100) * 0.01))
+				+ (150 * iconP2.scale.x - 150) / 2
+				- iconOffset
+				+ healthBar.width;
+			iconP1.x = healthBar.x
+				- (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 100, 0, 0, 100) * 0.01))
+				- (150 * iconP1.scale.x) / 2
+				- iconOffset * 2
+				+ healthBar.width;
+		}
 
 		if (health > 2)
 			health = 2;
@@ -3244,9 +3330,15 @@ class PlayState extends MusicBeatState
 			MusicBeatState.switchState(new CharacterEditorState(SONG.player2));
 		}
 		
+		
 		if (startedCountdown)
 		{
 			Conductor.songPosition += FlxG.elapsed * 1000 * playbackRate;
+		}
+		
+		if (foePlay)
+		{
+			gf.flipX = false;
 		}
 
 		if (startingSong)
@@ -3664,11 +3756,20 @@ class PlayState extends MusicBeatState
 				if(Math.isNaN(time) || time <= 0) time = 0.6;
 
 				if(value != 0) {
-					if(dad.curCharacter.startsWith('gf')) { //Tutorial GF is actually Dad! The GF is an imposter!! ding ding ding ding ding ding ding, dindinding, end my suffering
+					if (dad.curCharacter.startsWith('gf') && !foePlay)
+					{ // Tutorial GF is actually Dad! The GF is an imposter!! ding ding ding ding ding ding ding, dindinding, end my suffering
 						dad.playAnim('cheer', true);
 						dad.specialAnim = true;
 						dad.heyTimer = time;
-					} else if (gf != null) {
+					}
+					else if (boyfriend.curCharacter.startsWith('gf') && foePlay)
+					{ // Tutorial GF is actually Dad! The GF is an imposter!! ding ding ding ding ding ding ding, dindinding, end my suffering
+						boyfriend.playAnim('cheer', true);
+						boyfriend.specialAnim = true;
+						boyfriend.heyTimer = time;
+					}
+					else if (gf != null)
+					{
 						gf.playAnim('cheer', true);
 						gf.specialAnim = true;
 						gf.heyTimer = time;
@@ -3680,9 +3781,18 @@ class PlayState extends MusicBeatState
 					}
 				}
 				if(value != 1) {
-					boyfriend.playAnim('hey', true);
-					boyfriend.specialAnim = true;
-					boyfriend.heyTimer = time;
+					if (!foePlay)
+					{
+						boyfriend.playAnim('hey', true);
+						boyfriend.specialAnim = true;
+						boyfriend.heyTimer = time;
+					}
+					else
+					{
+						dad.playAnim('hey', true);
+						dad.specialAnim = true;
+						dad.heyTimer = time;
+					}
 				}
 
 			case 'Set GF Speed':
@@ -3811,18 +3921,19 @@ class PlayState extends MusicBeatState
 
 			case 'Play Animation':
 				//trace('Anim to play: ' + value1);
-				var char:Character = dad;
+				var char:Character = foePlay ? boyfriend : dad;
 				switch(value2.toLowerCase().trim()) {
 					case 'bf' | 'boyfriend':
-						char = boyfriend;
+						char = foePlay ? dad : boyfriend;
 					case 'gf' | 'girlfriend':
 						char = gf;
 					default:
 						var val2:Int = Std.parseInt(value2);
 						if(Math.isNaN(val2)) val2 = 0;
 
-						switch(val2) {
-							case 1: char = boyfriend;
+						switch (val2)
+						{
+							case 1: char = foePlay ? dad : boyfriend;
 							case 2: char = gf;
 						}
 				}
@@ -3850,18 +3961,24 @@ class PlayState extends MusicBeatState
 				}
 
 			case 'Alt Idle Animation':
-				var char:Character = dad;
-				switch(value1.toLowerCase().trim()) {
+				var char:Character = foePlay ? boyfriend : dad;
+				switch (value1.toLowerCase())
+				{
 					case 'gf' | 'girlfriend':
 						char = gf;
 					case 'boyfriend' | 'bf':
-						char = boyfriend;
+						char = foePlay ? dad : boyfriend;
+					case 'dad':
+						char = foePlay ? boyfriend : dad;
 					default:
 						var val:Int = Std.parseInt(value1);
-						if(Math.isNaN(val)) val = 0;
+						if (Math.isNaN(val))
+							val = 0;
 
-						switch(val) {
-							case 1: char = boyfriend;
+						switch (val)
+						{
+							case 0: char = foePlay ? boyfriend : dad;
+							case 1: char = foePlay ? dad : boyfriend;
 							case 2: char = gf;
 						}
 				}
@@ -3904,58 +4021,102 @@ class PlayState extends MusicBeatState
 
 				switch(charType) {
 					case 0:
-						if(boyfriend.curCharacter != value2) {
-							if(!boyfriendMap.exists(value2)) {
-								addCharacterToList(value2, charType);
-							}
-
-							var lastAlpha:Float = boyfriend.alpha;
-							boyfriend.alpha = 0.00001;
-							boyfriend = boyfriendMap.get(value2);
-							boyfriend.alpha = lastAlpha;
-							iconP1.changeIcon(boyfriend.healthIcon, boyfriend.fiveicons);
-						}
-						setOnLuas('boyfriendName', boyfriend.curCharacter);
-
-					case 1:
-						if(dad.curCharacter != value2) {
-							if(!dadMap.exists(value2)) {
-								addCharacterToList(value2, charType);
-							}
-
-							var wasGf:Bool = dad.curCharacter.startsWith('gf');
-							var lastAlpha:Float = dad.alpha;
-							dad.alpha = 0.00001;
-							dad = dadMap.get(value2);
-							if(!dad.curCharacter.startsWith('gf')) {
-								if(wasGf && gf != null) {
-									gf.visible = true;
-								}
-							} else if(gf != null) {
-								gf.visible = false;
-							}
-							dad.alpha = lastAlpha;
-							iconP2.changeIcon(dad.healthIcon, dad.fiveicons);
-						}
-						setOnLuas('dadName', dad.curCharacter);
-
-					case 2:
-						if(gf != null)
-						{
-							if(gf.curCharacter != value2)
+							if (!foePlay)
 							{
-								if(!gfMap.exists(value2))
-								{
-									addCharacterToList(value2, charType);
+								if(boyfriend.curCharacter != value2) {
+									if(!boyfriendMap.exists(value2)) {
+										addCharacterToList(value2, charType);
+									}
+		
+									var lastAlpha:Float = boyfriend.alpha;
+									boyfriend.alpha = 0.00001;
+									boyfriend = boyfriendMap.get(value2);
+									boyfriend.alpha = lastAlpha;
+									trace('new bf, ' + boyfriend.curCharacter);
+									iconP1.changeIcon(boyfriend.healthIcon, boyfriend.fiveicons);
 								}
-
-								var lastAlpha:Float = gf.alpha;
-								gf.alpha = 0.00001;
-								gf = gfMap.get(value2);
-								gf.alpha = lastAlpha;
+								setOnLuas('boyfriendName', boyfriend.curCharacter);
+							} else {
+								if(dad.curCharacter != value2) {
+									if(!dadMap.exists(value2)) {
+										addCharacterToList(value2, charType);
+									}
+		
+									var lastAlpha:Float = dad.alpha;
+									dad.alpha = 0.00001;
+									dad = dadMap.get(value2);
+									dad.alpha = lastAlpha;
+									trace('new foe bf, ' + dad.curCharacter);
+									iconP1.changeIcon(dad.healthIcon, dad.fiveicons);
+								}
+								setOnLuas('boyfriendName', dad.curCharacter);
 							}
-							setOnLuas('gfName', gf.curCharacter);
-						}
+	
+						case 1:
+							if (!foePlay)
+							{
+								if(dad.curCharacter != value2) {
+									if(!dadMap.exists(value2)) {
+										addCharacterToList(value2, charType);
+									}
+		
+									var wasGf:Bool = dad.curCharacter.startsWith('gf');
+									var lastAlpha:Float = dad.alpha;
+									dad.alpha = 0.00001;
+									dad = dadMap.get(value2);
+									if(!dad.curCharacter.startsWith('gf')) {
+										if(wasGf && gf != null) {
+											gf.visible = true;
+										}
+									} else if(gf != null) {
+										gf.visible = false;
+									}
+									dad.alpha = lastAlpha;
+									trace('new dad, ' + dad.curCharacter);
+									iconP2.changeIcon(dad.healthIcon, dad.fiveicons);
+								}
+								setOnLuas('dadName', dad.curCharacter);
+							} else {
+								if(boyfriend.curCharacter != value2) {
+									if(!boyfriendMap.exists(value2)) {
+										addCharacterToList(value2, charType);
+									}
+		
+									var wasGf:Bool = boyfriend.curCharacter.startsWith('gf');
+									var lastAlpha:Float = boyfriend.alpha;
+									boyfriend.alpha = 0.00001;
+									boyfriend = boyfriendMap.get(value2);
+									if(!boyfriend.curCharacter.startsWith('gf')) {
+										if(wasGf && gf != null) {
+											gf.visible = true;
+										}
+									} else if(gf != null) {
+										gf.visible = false;
+									}
+									boyfriend.alpha = lastAlpha;
+									trace('new player dad, ' + boyfriend.curCharacter);
+									iconP2.changeIcon(boyfriend.healthIcon, boyfriend.fiveicons);
+								}
+								setOnLuas('dadName', boyfriend.curCharacter);
+							}
+	
+						case 2:
+							if(gf != null)
+							{
+								if(gf.curCharacter != value2)
+								{
+									if(!gfMap.exists(value2))
+									{
+										addCharacterToList(value2, charType);
+									}
+	
+									var lastAlpha:Float = gf.alpha;
+									gf.alpha = 0.00001;
+									gf = gfMap.get(value2);
+									gf.alpha = lastAlpha;
+								}
+								setOnLuas('gfName', gf.curCharacter);
+							}
 				}
 				reloadHealthBarColors();
 
@@ -4027,16 +4188,37 @@ class PlayState extends MusicBeatState
 	{
 		if(isDad)
 		{
-			camFollow.set(dad.getMidpoint().x + 150, dad.getMidpoint().y - 100);
-			camFollow.x += dad.cameraPosition[0] + opponentCameraOffset[0];
-			camFollow.y += dad.cameraPosition[1] + opponentCameraOffset[1];
-			tweenCamIn();
+			if (!foePlay)
+			{
+				tweenCamIn();
+				camFollow.set(dad.getMidpoint().x + 150, dad.getMidpoint().y - 100);
+				camFollow.x += dad.cameraPosition[0] + opponentCameraOffset[0];
+				camFollow.y += dad.cameraPosition[1] + opponentCameraOffset[1];
+			}
+			else
+			{
+				tweenCamIn();
+				camFollow.set(boyfriend.getMidpoint().x + 150, boyfriend.getMidpoint().y - 100);
+				camFollow.x += boyfriend.cameraPosition[0] + opponentCameraOffset[0];
+				camFollow.y += boyfriend.cameraPosition[1] + opponentCameraOffset[1];
+			}
 		}
 		else
 		{
-			camFollow.set(boyfriend.getMidpoint().x - 100, boyfriend.getMidpoint().y - 100);
-			camFollow.x -= boyfriend.cameraPosition[0] - boyfriendCameraOffset[0];
-			camFollow.y += boyfriend.cameraPosition[1] + boyfriendCameraOffset[1];
+			if (!foePlay)
+			{
+				tweenCamIn();
+				camFollow.set(boyfriend.getMidpoint().x - 100, boyfriend.getMidpoint().y - 100);
+				camFollow.x -= boyfriend.cameraPosition[0] - boyfriendCameraOffset[0];
+				camFollow.y += boyfriend.cameraPosition[1] + boyfriendCameraOffset[1];
+			}
+			else
+			{
+				tweenCamIn();
+				camFollow.set(dad.getMidpoint().x - 100, dad.getMidpoint().y - 100);
+				camFollow.x -= dad.cameraPosition[0] - boyfriendCameraOffset[0];
+				camFollow.y += dad.cameraPosition[1] + boyfriendCameraOffset[1];
+			}
 
 			if (Paths.formatToSongPath(SONG.song) == 'tutorial' && cameraTwn == null && FlxG.camera.zoom != 1)
 			{

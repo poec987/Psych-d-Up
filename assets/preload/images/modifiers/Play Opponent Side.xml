@@ -1,0 +1,7 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="Play Opponent Side.png">
+	<!-- Created with Adobe Animate version 21.0.6.41649 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="Play Opponent Side Idle0000" x="0" y="0" width="194" height="187"/>
+	<SubTexture name="Play Opponent Side Select0000" x="194" y="0" width="194" height="187"/>
+</TextureAtlas>
