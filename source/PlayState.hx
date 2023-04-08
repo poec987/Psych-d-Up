@@ -3335,10 +3335,14 @@ class PlayState extends MusicBeatState
 		{
 			Conductor.songPosition += FlxG.elapsed * 1000 * playbackRate;
 		}
-		
-		if (foePlay)
+
+		var stageData:StageFile = StageData.getStageFile(curStage);
+		if (stageData != null)
 		{
-			gf.flipX = false;
+			if (foePlay && !stageData.hide_girlfriend)
+			{
+				gf.flipX = false;
+			}
 		}
 
 		if (startingSong)
