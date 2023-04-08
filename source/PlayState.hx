@@ -4051,7 +4051,7 @@ class PlayState extends MusicBeatState
 									dad = dadMap.get(value2);
 									dad.alpha = lastAlpha;
 									trace('new foe bf, ' + dad.curCharacter);
-									iconP1.changeIcon(dad.healthIcon, dad.fiveicons);
+									iconP2.changeIcon(dad.healthIcon, dad.fiveicons);
 								}
 								setOnLuas('boyfriendName', dad.curCharacter);
 							}
@@ -4099,7 +4099,7 @@ class PlayState extends MusicBeatState
 									}
 									boyfriend.alpha = lastAlpha;
 									trace('new player dad, ' + boyfriend.curCharacter);
-									iconP2.changeIcon(boyfriend.healthIcon, boyfriend.fiveicons);
+									iconP1.changeIcon(boyfriend.healthIcon, boyfriend.fiveicons);
 								}
 								setOnLuas('dadName', boyfriend.curCharacter);
 							}
