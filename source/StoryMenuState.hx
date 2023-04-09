@@ -44,6 +44,8 @@ class StoryMenuState extends MusicBeatState
 	var curDifficulty:Int = 1;
 
 	var txtWeekTitle:FlxText;
+	
+	public static var instorymenu:Bool = false;
 
 	private static var curWeek:Int = 0;
 
@@ -65,6 +67,8 @@ class StoryMenuState extends MusicBeatState
 
 	override function create()
 	{
+		instorymenu = true;
+		
 		Paths.clearStoredMemory();
 		Paths.clearUnusedMemory();
 
@@ -279,7 +283,8 @@ class StoryMenuState extends MusicBeatState
 			if(FlxG.keys.justPressed.CONTROL)
 			{
 				persistentUpdate = false;
-				openSubState(new GameplayChangersSubstate());
+				FlxG.switchState(new ModifierState());
+				DiscordClient.changePresence("Time to spice the game.",  null);
 			}
 			else if(controls.RESET)
 			{
@@ -289,12 +294,14 @@ class StoryMenuState extends MusicBeatState
 			}
 			else if (controls.ACCEPT)
 			{
+				PlayState.chartType = "standard";
 				selectWeek();
 			}
 		}
 
 		if (controls.BACK && !movedBack && !selectedWeek)
 		{
+			instorymenu = false;
 			FlxG.sound.play(Paths.sound('cancelMenu'));
 			movedBack = true;
 			MusicBeatState.switchState(new MainMenuState());
