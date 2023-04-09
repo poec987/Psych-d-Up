@@ -33,6 +33,7 @@ import flixel.math.FlxMath;
 import flixel.util.FlxSave;
 import flixel.addons.transition.FlxTransitionableState;
 import flixel.system.FlxAssets.FlxShader;
+import ModifierVariables._modifiers;
 
 #if (!flash && sys)
 import flixel.addons.display.FlxRuntimeShader;
@@ -949,6 +950,12 @@ class FunkinLua {
 		Lua_helper.add_callback(lua, "getProperty", function(variable:String) {
 			var result:Dynamic = null;
 			var killMe:Array<String> = variable.split('.');
+			if (killMe[0] == 'boyfriend' && _modifiers.OpponentPlay) {
+				killMe[0] = 'dad';
+			}
+			else if (killMe[0] == 'dad' && _modifiers.OpponentPlay) {
+				killMe[0] = 'boyfriend';
+			}
 			if(killMe.length > 1)
 				result = getVarInArray(getPropertyLoopThingWhatever(killMe), killMe[killMe.length-1]);
 			else
@@ -957,6 +964,12 @@ class FunkinLua {
 		});
 		Lua_helper.add_callback(lua, "setProperty", function(variable:String, value:Dynamic) {
 			var killMe:Array<String> = variable.split('.');
+			if (killMe[0] == 'boyfriend' && _modifiers.OpponentPlay) {
+				killMe[0] = 'dad';
+			}
+			else if (killMe[0] == 'dad' && _modifiers.OpponentPlay) {
+				killMe[0] = 'boyfriend';
+			}
 			if(killMe.length > 1) {
 				setVarInArray(getPropertyLoopThingWhatever(killMe), killMe[killMe.length-1], value);
 				return true;
@@ -3007,6 +3020,12 @@ class FunkinLua {
 	function tweenShit(tag:String, vars:String) {
 		cancelTween(tag);
 		var variables:Array<String> = vars.split('.');
+		if (variables[0] == 'boyfriend' && _modifiers.OpponentPlay) {
+			variables[0] = 'dad';
+		}
+		else if (variables[0] == 'dad' && _modifiers.OpponentPlay) {
+			variables[0] = 'boyfriend';
+		}
 		var sexyProp:Dynamic = getObjectDirectly(variables[0]);
 		if(variables.length > 1) {
 			sexyProp = getVarInArray(getPropertyLoopThingWhatever(variables), variables[variables.length-1]);
