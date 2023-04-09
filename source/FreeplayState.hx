@@ -493,13 +493,15 @@ class FreeplayState extends MusicBeatState
 			if(colorTween != null) {
 				colorTween.cancel();
 			}
-			if(vocals != null) {
+			if (vocals != null) {
 				vocals.fadeOut(0.9, 0);
 			}
 
 			new FlxTimer().start(0.9, function(tmr:FlxTimer)
 			{	
-				destroyFreeplayVocals();
+				if(vocals != null) {
+					vocals.stop();
+				}
 				FlxG.state.openSubState(new ChartTypeSubstate());
 			});
 		}	
