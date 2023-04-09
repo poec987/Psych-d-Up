@@ -50,6 +50,7 @@ class MainMenuState extends MusicBeatState
 	var bg:FlxSprite = new FlxSprite( -89).loadGraphic(Paths.image('mainmenu/' + ClientPrefs.menuStyle+'/menuBG'));
 	var checker:FlxBackdrop = new FlxBackdrop(Paths.image('mainmenu/' + ClientPrefs.menuStyle +'/Main_Checker'), 0.2, 0.2, true, true);
 	var gradientBar:FlxSprite = new FlxSprite(0, 0).makeGraphic(FlxG.width, 300, 0xFFde6f00);
+	var side:FlxSprite = new FlxSprite(0,-80).loadGraphic(Paths.image('Main_Side'));
 	
 	public static var styleList:StyleList = getStyleFile('assets/images/mainmenu/styles.json');
 
@@ -85,7 +86,7 @@ class MainMenuState extends MusicBeatState
 	var camFollowPos:FlxObject;
 	var debugKeys:Array<FlxKey>;
 	
-	var camLerp:Float = 0.1;
+	var camLerp:Float = 0.4;
 
 	override function create()
 	{
@@ -144,8 +145,8 @@ class MainMenuState extends MusicBeatState
 		bg.angle = 179;
 		add(bg);
 
-		camFollow = new FlxObject(0, 0, 1, 1);
-		camFollowPos = new FlxObject(0, 0, 1, 1);
+		camFollow = new FlxObject(1, 1, 2, 1);
+		camFollowPos = new FlxObject(1, 1, 2, 1);
 		add(camFollow);
 		add(camFollowPos);
 		
@@ -158,6 +159,11 @@ class MainMenuState extends MusicBeatState
 			
 			add(checker);
 			checker.scrollFactor.set(0, 0.07);
+			
+			side.scrollFactor.x = 0;
+			side.scrollFactor.y = (optionShit.length - 4) * 0.135;
+			side.antialiasing = true;
+			add(side);
 		}
 
 		magenta = new FlxSprite(-80).loadGraphic(Paths.image('menuDesat'));
@@ -183,7 +189,7 @@ class MainMenuState extends MusicBeatState
 		for (i in 0...optionShit.length)
 		{
 			var offset:Float = 108 - (Math.max(optionShit.length, 4) - 4) * 80;
-			var menuItem:FlxSprite = new FlxSprite(0, (i * 140)  + offset);
+			var menuItem:FlxSprite = new FlxSprite(0, (i * 225 -20)  + offset);
 			menuItem.scale.x = scale;
 			menuItem.scale.y = scale;
 			menuItem.frames = Paths.getSparrowAtlas('mainmenu/'+ClientPrefs.menuStyle+'/menu_' + optionShit[i]);
@@ -192,8 +198,8 @@ class MainMenuState extends MusicBeatState
 			menuItem.animation.play('idle');
 			menuItem.ID = i;
 			menuItem.screenCenter(X);
-			menuItem.x = menuItem.x + offset;
-			FlxTween.tween(menuItem, {x: menuItem.width / 4 + (i * 100) - 30}, 1.3, {ease: FlxEase.expoInOut});
+			menuItem.x = menuItem.x + 30 + offset;
+			FlxTween.tween(menuItem, {x: menuItem.width / 4 + (i * 100) + 30}, 1.3, {ease: FlxEase.expoInOut});
 			menuItems.add(menuItem);
 			var scr:Float = (optionShit.length - 4) * 0.135;
 			if(optionShit.length < 6) scr = 0;
@@ -205,10 +211,12 @@ class MainMenuState extends MusicBeatState
 
 		FlxG.camera.follow(camFollow, null, camLerp);
 
+		side.alpha = 0;
 		FlxG.camera.zoom = 3;
 		FlxTween.tween(FlxG.camera, {zoom: 1}, 1.1, {ease: FlxEase.expoInOut});
 		FlxTween.tween(bg, {angle: 0}, 1, {ease: FlxEase.quartInOut});
 		FlxTween.tween(bg, {width: 1.1}, 1, {ease: FlxEase.quartInOut});
+		FlxTween.tween(side, {alpha: 1}, 0.9, {ease: FlxEase.quartInOut});
 
 
 		var versionShit:FlxText = new FlxText(12, FlxG.height - 44, 0, "Psych Engine v" + psychEngineVersion, 12);
@@ -259,7 +267,7 @@ class MainMenuState extends MusicBeatState
 			if(FreeplayState.vocals != null) FreeplayState.vocals.volume += 0.5 * elapsed;
 		}
 
-		var lerpVal:Float = CoolUtil.boundTo(elapsed * 7.5, 0, 1);
+		var lerpVal:Float = CoolUtil.boundTo(elapsed * 10, 0, 1);
 		camFollowPos.setPosition(FlxMath.lerp(camFollowPos.x, camFollow.x, lerpVal), FlxMath.lerp(camFollowPos.y, camFollow.y, lerpVal));
 
 		checker.x -= 0.45 / (ClientPrefs.framerate / 60);
@@ -361,8 +369,8 @@ class MainMenuState extends MusicBeatState
 		{
 			if (spr.ID == curSelected)
 			{
-				camFollow.y = FlxMath.lerp(camFollow.y, spr.getGraphicMidpoint().y, camLerp / (ClientPrefs.framerate / 60));
-				camFollow.x = spr.getGraphicMidpoint().x;
+				camFollow.y = FlxMath.lerp(camFollow.y, spr.y, camLerp / (ClientPrefs.framerate / 60));
+				camFollow.x = FlxMath.lerp(camFollow.x, spr.x, camLerp / (ClientPrefs.framerate / 60));
 			}
 		});
 	}
@@ -385,10 +393,12 @@ class MainMenuState extends MusicBeatState
 			{
 				spr.animation.play('selected');
 				var add:Float = 0;
+				var add2:Float = 0;
 				if(menuItems.length > 4) {
 					add = menuItems.length * 8;
 				}
-				camFollow.setPosition(spr.getGraphicMidpoint().x, spr.getGraphicMidpoint().y - add);
+				
+				camFollow.setPosition(spr.x, spr.y);
 				spr.centerOffsets();
 			}
 		});
