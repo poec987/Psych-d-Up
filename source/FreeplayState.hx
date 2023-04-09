@@ -3,6 +3,7 @@ package;
 #if desktop
 import Discord.DiscordClient;
 #end
+import flixel.util.FlxTimer;
 import editors.ChartingState;
 import flash.text.TextField;
 import flixel.tweens.FlxEase;
@@ -492,17 +493,16 @@ class FreeplayState extends MusicBeatState
 			if(colorTween != null) {
 				colorTween.cancel();
 			}
-			
-			if (FlxG.keys.pressed.SHIFT){
-				LoadingState.loadAndSwitchState(new ChartingState());
-			}else{
-				LoadingState.loadAndSwitchState(new PlayState());
+			if(vocals != null) {
+				vocals.fadeOut(0.9, 0);
 			}
 
-			FlxG.sound.music.volume = 0;
-					
-			destroyFreeplayVocals();
-		}
+			new FlxTimer().start(0.9, function(tmr:FlxTimer)
+			{	
+				destroyFreeplayVocals();
+				FlxG.state.openSubState(new ChartTypeSubstate());
+			});
+		}	
 		else if(controls.RESET)
 		{
 			persistentUpdate = false;

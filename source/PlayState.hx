@@ -61,6 +61,7 @@ import StageData;
 import FunkinLua;
 import DialogueBoxPsych;
 import Conductor.Rating;
+import seedyrng.Random;
 import openfl.filters.ShaderFilter;
 
 #if !flash 
@@ -82,6 +83,7 @@ class PlayState extends MusicBeatState
 {
 	public static var STRUM_X = 42;
 	public static var STRUM_X_MIDDLESCROLL = -278;
+	public static var chartType:String = "standard";
 
 	public static var ratingStuff:Array<Dynamic> = [
 		['You Suck!', 0.2], //From 0% to 19%
@@ -291,6 +293,9 @@ class PlayState extends MusicBeatState
 	var noteAccel:Float = 0;
 	var paparazziInt:Int = 0;
 	var frozen:Bool = false;
+	
+	public static var arrowLane:Int = 0;
+	public static var arrowLane2:Int = 0;
 
 	public static var campaignScore:Int = 0;
 	public static var campaignMisses:Int = 0;
@@ -2545,6 +2550,7 @@ class PlayState extends MusicBeatState
 	}
 
 	var debugNum:Int = 0;
+	var stair:Int = 0;
 	private var noteTypeMap:Map<String, Bool> = new Map<String, Bool>();
 	private var eventPushedMap:Map<String, Bool> = new Map<String, Bool>();
 	private function generateSong(dataPath:String):Void
@@ -2585,6 +2591,32 @@ class PlayState extends MusicBeatState
 		var playerCounter:Int = 0;
 
 		var daBeats:Int = 0; // Not exactly representative of 'daBeats' lol, just how much it has looped
+		var random = null;
+		if (chartType == "chaos")
+		{
+			random = new Random(null, new seedyrng.Xorshift64Plus());
+			if (FlxG.random.bool(50))
+			{
+				if (FlxG.random.bool(50))
+				{
+					var seed = FlxG.random.int(1000000, 9999999); // seed in string numbers
+					FlxG.log.add('SEED (STRING): ' + seed);
+					random.setStringSeed(Std.string(seed));
+				}
+				else
+				{
+					var seed = Random.Random.string(7);
+					FlxG.log.add('SEED (STRING): ' + seed); // seed in string (alphabet edition)
+					random.setStringSeed(seed);
+				}
+			}
+			else
+			{
+				var seed = FlxG.random.int(1000000, 9999999); // seed in int
+				FlxG.log.add('SEED (INT): ' + seed);
+				random.seed = seed;
+			}
+		}
 
 		var songName:String = Paths.formatToSongPath(SONG.song);
 		var file:String = Paths.json(songName + '/events');
@@ -2630,6 +2662,87 @@ class PlayState extends MusicBeatState
 				if (songNotes[1] > 3)
 				{
 					gottaHitNote = !section.mustHitSection;
+				}
+				
+				switch (chartType)
+				{
+					case "standard":
+						/*if (_variables.fiveK)
+							daNoteData = Std.int(songNotes[1] % 5);
+						else*/
+							daNoteData = Std.int(songNotes[1] % 4);
+					case "flip":
+						if (gottaHitNote)
+						{
+							// B-SIDE FLIP???? Rozebud be damned lmao
+							/*if (_variables.fiveK)
+								daNoteData = 4 - Std.int(songNotes[1] % 5);
+							else*/
+								daNoteData = 3 - Std.int(songNotes[1] % 4);
+						}
+
+					case "chaos":
+						/*if (_variables.fiveK)
+						{
+							daNoteData = random.randomInt(0, 4);
+						}
+						else
+						{*/
+							daNoteData = random.randomInt(0, 3);
+						//}
+
+					case "onearrow":
+						daNoteData = arrowLane;
+					case "stair":
+						/*if (_variables.fiveK)
+							daNoteData = stair % 5;
+						else*/
+							daNoteData = stair % 4;
+						stair++;
+					case "dualarrow":
+						switch (stair)
+						{
+							case 0:
+								daNoteData = arrowLane;
+								stair = 1;
+							case 1:
+								daNoteData = arrowLane2;
+								stair = 0;
+						}
+					case "dualchaos":
+						if (FlxG.random.bool(50))
+							daNoteData = arrowLane;
+						else
+							daNoteData = arrowLane2;
+					case "wave":
+						/*if (_variables.fiveK)
+						{
+							switch (stair % 8)
+							{
+								case 0 | 1 | 2 | 3 | 4:
+									daNoteData = stair % 8;
+								case 5:
+									daNoteData = 3;
+								case 6:
+									daNoteData = 2;
+								case 7:
+									daNoteData = 1;
+							}
+						}
+						else
+						{*/
+							switch (stair % 6)
+							{
+								case 0 | 1 | 2 | 3:
+									daNoteData = stair % 6;
+								case 4:
+									daNoteData = 2;
+								case 5:
+									daNoteData = 1;
+							}
+						//}
+
+						stair++;
 				}
 				
 				if (foePlay)
