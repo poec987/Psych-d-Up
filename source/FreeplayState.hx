@@ -20,6 +20,7 @@ import flixel.util.FlxColor;
 import flixel.tweens.FlxTween;
 import flixel.addons.display.FlxBackdrop;
 import lime.utils.Assets;
+import flixel.graphics.FlxGraphic;
 import flixel.system.FlxSound;
 import openfl.utils.Assets as OpenFlAssets;
 import WeekData;
@@ -184,15 +185,9 @@ class FreeplayState extends MusicBeatState
 			// songText.screenCenter(X);
 		}
 		
-		var diffTex = Paths.getSparrowAtlas('difficulties');
+		
 		sprDifficulty = new FlxSprite(130, -10);
-		sprDifficulty.frames = diffTex;
-		sprDifficulty.animation.addByPrefix('easy', 'EASY');
-		sprDifficulty.animation.addByPrefix('normal', 'NORMAL');
-		sprDifficulty.animation.addByPrefix('hard', 'HARD');
-		sprDifficulty.animation.play('easy');
-		sprDifficulty.screenCenter(X);
-		sprDifficulty.y = FlxG.height - sprDifficulty.height - 48;
+		sprDifficulty.antialiasing = ClientPrefs.globalAntialiasing;
 		add(sprDifficulty);
 		
 		WeekData.setDirectoryFromWeek();
@@ -554,20 +549,18 @@ class FreeplayState extends MusicBeatState
 		PlayState.storyDifficulty = curDifficulty;
 		diffText.text = '< ' + CoolUtil.difficultyString() + ' >';
 		
-		switch (curDifficulty)
-		{
-			case 0:
-				sprDifficulty.animation.play('easy');
-			case 1:
-				sprDifficulty.animation.play('normal');
-			case 2:
-				sprDifficulty.animation.play('hard');
-		}
-		sprDifficulty.alpha = 0;
+		var diff:String = CoolUtil.difficulties[curDifficulty];
+		var newImage:FlxGraphic = Paths.image('menudifficulties/' + Paths.formatToSongPath(diff));
+		//trace(Paths.currentModDirectory + ', menudifficulties/' + Paths.formatToSongPath(diff));
 
-		sprDifficulty.y = FlxG.height - sprDifficulty.height - 68;
+		if(sprDifficulty.graphic != newImage)
+		{
+			sprDifficulty.loadGraphic(newImage);
+			sprDifficulty.x = FlxG.width / 2 - sprDifficulty.width / 2;
+			sprDifficulty.y = FlxG.height - sprDifficulty.height - 68;
+		}
+		
 		FlxTween.tween(sprDifficulty, {y: FlxG.height - sprDifficulty.height - 30, alpha: 1}, 0.04);
-		sprDifficulty.x = FlxG.width / 2 - sprDifficulty.width / 2;
 	}
 
 	function changeSelection(change:Int = 0, playSound:Bool = true)
