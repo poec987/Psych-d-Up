@@ -956,6 +956,14 @@ class FunkinLua {
 			else if (killMe[0] == 'dad' && _modifiers.OpponentPlay) {
 				killMe[0] = 'boyfriend';
 			}
+			//Icon
+			if (killMe[0] == 'iconP1' && _modifiers.OpponentPlay) {
+				killMe[0] = 'iconP2';
+			}
+			else if (killMe[0] == 'iconP2' && _modifiers.OpponentPlay) {
+				killMe[0] = 'iconP1';
+			}
+			//Continue
 			if(killMe.length > 1)
 				result = getVarInArray(getPropertyLoopThingWhatever(killMe), killMe[killMe.length-1]);
 			else
@@ -970,6 +978,14 @@ class FunkinLua {
 			else if (killMe[0] == 'dad' && _modifiers.OpponentPlay) {
 				killMe[0] = 'boyfriend';
 			}
+			//Icon
+			if (killMe[0] == 'iconP1' && _modifiers.OpponentPlay) {
+				killMe[0] = 'iconP2';
+			}
+			else if (killMe[0] == 'iconP2' && _modifiers.OpponentPlay) {
+				killMe[0] = 'iconP1';
+			}
+			//Continue
 			if(killMe.length > 1) {
 				setVarInArray(getPropertyLoopThingWhatever(killMe), killMe[killMe.length-1], value);
 				return true;
@@ -3026,6 +3042,14 @@ class FunkinLua {
 		else if (variables[0] == 'dad' && _modifiers.OpponentPlay) {
 			variables[0] = 'boyfriend';
 		}
+		//Icon
+		if (variables[0] == 'iconP1' && _modifiers.OpponentPlay) {
+			variables[0] = 'iconP2';
+		}
+		else if (variables[0] == 'iconP2' && _modifiers.OpponentPlay) {
+			variables[0] = 'iconP1';
+		}
+		//Continue
 		var sexyProp:Dynamic = getObjectDirectly(variables[0]);
 		if(variables.length > 1) {
 			sexyProp = getVarInArray(getPropertyLoopThingWhatever(variables), variables[variables.length-1]);

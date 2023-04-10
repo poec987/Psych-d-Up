@@ -174,7 +174,7 @@ class ModifierState extends MusicBeatState
 
 		FlxG.camera.follow(camFollow, null, camLerp);
 
-		DiscordClient.changePresence("Settings up modifiers", null);
+		DiscordClient.changePresence("Setting up modifiers", null);
     }
 
 	var selectable:Bool = false;

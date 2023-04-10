@@ -3457,6 +3457,10 @@ class PlayState extends MusicBeatState
 				gf.flipX = false;
 			}
 		}
+		else if (foePlay)	
+		{
+			gf.flipX = false;
+		}
 
 		if (startingSong)
 		{
